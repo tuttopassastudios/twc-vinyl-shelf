@@ -1,5 +1,6 @@
 import { useRef, useState, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { albumToColor } from '../../utils/colors'
@@ -18,6 +19,7 @@ export default function RecordSpine({ album, position, onClick }) {
   const isSelected = selectedAlbumId === album.id
 
   const spineColor = useMemo(() => albumToColor(album.name), [album.name])
+  const coverUrl = album.images?.[0]?.url
 
   const handlePointerEnter = (e) => {
     e.stopPropagation()
@@ -78,6 +80,51 @@ export default function RecordSpine({ album, position, onClick }) {
     >
       <boxGeometry args={[SPINE_THICKNESS, SPINE_HEIGHT, SPINE_DEPTH]} />
       <meshStandardMaterial color={spineColor} roughness={0.6} metalness={0.1} />
+
+      {/* Hover preview — cover art floating above spine */}
+      {hovered && coverUrl && (
+        <Html
+          position={[0, SPINE_HEIGHT / 2 + 0.1, 0]}
+          center
+          distanceFactor={6}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div
+            style={{
+              width: 120,
+              background: 'rgba(20, 16, 12, 0.95)',
+              borderRadius: 4,
+              padding: 4,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+              textAlign: 'center',
+            }}
+          >
+            <img
+              src={coverUrl}
+              alt={album.name}
+              style={{
+                width: '100%',
+                aspectRatio: '1',
+                objectFit: 'cover',
+                borderRadius: 2,
+                display: 'block',
+              }}
+            />
+            <div
+              style={{
+                padding: '6px 4px 4px',
+                fontSize: 10,
+                color: '#e8dcc8',
+                fontFamily: 'inherit',
+                lineHeight: 1.3,
+              }}
+            >
+              <div style={{ fontStyle: 'italic', marginBottom: 2 }}>{album.name}</div>
+              <div style={{ color: '#c9a84c', fontSize: 9 }}>{album.artist}</div>
+            </div>
+          </div>
+        </Html>
+      )}
     </mesh>
   )
 }

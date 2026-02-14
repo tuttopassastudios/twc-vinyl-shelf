@@ -108,10 +108,10 @@ export default function RecordPullOut({ album }) {
           <meshStandardMaterial color="#1a1a1a" roughness={0.3} metalness={0.4} />
         </mesh>
 
-        {/* Grooves — arcs with gaps so rotation is visible */}
+        {/* Grooves — full concentric rings */}
         {[0.3, 0.45, 0.55, 0.65, 0.75, 0.85].map((r, i) => (
           <mesh key={i} position={[0, 0, 0.012]}>
-            <ringGeometry args={[r - 0.01, r, 64, 1, i * 0.4, Math.PI * 2 - 0.15]} />
+            <ringGeometry args={[r - 0.01, r, 64]} />
             <meshStandardMaterial
               color="#2a2a2a"
               roughness={0.2}
