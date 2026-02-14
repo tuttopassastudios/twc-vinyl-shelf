@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://tylerchase.github.io/twc-vinyl-shelf",
+  "homepage": "https://tuttopassastudios.github.io/twc-vinyl-shelf",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
