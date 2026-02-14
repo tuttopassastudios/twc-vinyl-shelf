@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TWC Vinyl Shelf</title>
+    <script>
+      // GitHub Pages SPA redirect — preserves the URL for client-side routing
+      sessionStorage.redirect = location.href;
+      var pathSegmentsToKeep = 1; // keep /twc-vinyl-shelf/
+      var l = window.location;
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/' +
+        (l.search ? l.search : '')
+      );
+    </script>
+  </head>
+  <body></body>
+</html>
