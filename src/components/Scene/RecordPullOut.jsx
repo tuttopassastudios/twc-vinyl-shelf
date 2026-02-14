@@ -58,7 +58,7 @@ export default function RecordPullOut({ album }) {
   // Gentle idle spin on the vinyl
   useFrame((_, delta) => {
     if (vinylRef.current) {
-      vinylRef.current.rotation.z -= delta * 0.3
+      vinylRef.current.rotation.y -= delta * 0.3
     }
   })
 
@@ -89,7 +89,7 @@ export default function RecordPullOut({ album }) {
       </mesh>
 
       {/* Vinyl disc — peeks out to the right */}
-      <group ref={vinylRef} position={[0.4, 0, 0]}>
+      <group ref={vinylRef} position={[0.4, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
         {/* Main disc */}
         <mesh>
           <cylinderGeometry args={[0.9, 0.9, 0.02, 64]} />
@@ -98,7 +98,7 @@ export default function RecordPullOut({ album }) {
 
         {/* Grooves — rings */}
         {[0.3, 0.45, 0.55, 0.65, 0.75, 0.85].map((r, i) => (
-          <mesh key={i} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
+          <mesh key={i} position={[0, 0, 0.012]}>
             <ringGeometry args={[r - 0.01, r, 64]} />
             <meshStandardMaterial
               color="#2a2a2a"
@@ -111,13 +111,13 @@ export default function RecordPullOut({ album }) {
         ))}
 
         {/* Center label */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.013, 0]}>
+        <mesh position={[0, 0, 0.013]}>
           <circleGeometry args={[0.22, 32]} />
           <meshStandardMaterial color={spineColor} roughness={0.6} />
         </mesh>
 
         {/* Center hole */}
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0.014, 0]}>
+        <mesh position={[0, 0, 0.014]}>
           <circleGeometry args={[0.03, 16]} />
           <meshStandardMaterial color="#1a1a1a" />
         </mesh>
