@@ -6,7 +6,7 @@ export default function Lighting() {
   const spotRef2 = useRef()
   const flickerRef = useRef(0)
 
-  // Subtle warm light flicker
+  // Subtle light flicker
   useFrame((_, delta) => {
     flickerRef.current += delta * 2
     const flicker = Math.sin(flickerRef.current * 1.3) * 0.02 + Math.sin(flickerRef.current * 3.7) * 0.01
@@ -16,8 +16,8 @@ export default function Lighting() {
 
   return (
     <>
-      {/* Warm ambient fill */}
-      <ambientLight color="#ffe0b2" intensity={0.3} />
+      {/* Neutral ambient fill */}
+      <ambientLight color="#ffffff" intensity={0.4} />
 
       {/* Main key light — top-left angled at shelf */}
       <spotLight
@@ -26,7 +26,7 @@ export default function Lighting() {
         angle={0.5}
         penumbra={0.8}
         intensity={1.2}
-        color="#ffe0b2"
+        color="#ffffff"
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -40,11 +40,11 @@ export default function Lighting() {
         angle={0.6}
         penumbra={1}
         intensity={0.8}
-        color="#ffcc80"
+        color="#e8e8e8"
       />
 
       {/* Subtle rim light from behind */}
-      <pointLight position={[0, 2, -3]} intensity={0.15} color="#ff8a65" />
+      <pointLight position={[0, 2, -3]} intensity={0.15} color="#c0c8ff" />
     </>
   )
 }

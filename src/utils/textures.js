@@ -7,8 +7,8 @@ export function createWoodTexture() {
   canvas.height = 512
   const ctx = canvas.getContext('2d')
 
-  // Base color
-  ctx.fillStyle = '#8B6914'
+  // Base color — neutral gray
+  ctx.fillStyle = '#5a5a5a'
   ctx.fillRect(0, 0, 512, 512)
 
   // Wood grain lines
@@ -16,7 +16,7 @@ export function createWoodTexture() {
     const y = Math.random() * 512
     const width = Math.random() * 3 + 0.5
     const alpha = Math.random() * 0.15 + 0.05
-    ctx.strokeStyle = `rgba(60, 40, 10, ${alpha})`
+    ctx.strokeStyle = `rgba(40, 40, 40, ${alpha})`
     ctx.lineWidth = width
     ctx.beginPath()
     ctx.moveTo(0, y)
@@ -32,8 +32,8 @@ export function createWoodTexture() {
     const y = Math.random() * 512
     const r = Math.random() * 15 + 5
     const grad = ctx.createRadialGradient(x, y, 0, x, y, r)
-    grad.addColorStop(0, 'rgba(90, 55, 10, 0.3)')
-    grad.addColorStop(1, 'rgba(90, 55, 10, 0)')
+    grad.addColorStop(0, 'rgba(70, 70, 70, 0.3)')
+    grad.addColorStop(1, 'rgba(70, 70, 70, 0)')
     ctx.fillStyle = grad
     ctx.beginPath()
     ctx.arc(x, y, r, 0, Math.PI * 2)
@@ -53,7 +53,7 @@ export function createPaperTexture() {
   canvas.height = 256
   const ctx = canvas.getContext('2d')
 
-  ctx.fillStyle = '#f5e6c8'
+  ctx.fillStyle = '#f0f0f0'
   ctx.fillRect(0, 0, 256, 256)
 
   // Noise

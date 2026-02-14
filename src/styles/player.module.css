@@ -4,8 +4,8 @@
   left: 0;
   right: 0;
   height: 80px;
-  background: linear-gradient(180deg, #2a1f16 0%, #1a1410 100%);
-  border-top: 1px solid rgba(139, 105, 20, 0.3);
+  background: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
+  border-top: 1px solid rgba(100, 100, 100, 0.3);
   display: flex;
   align-items: center;
   padding: 0 20px;

@@ -63,8 +63,8 @@ export default function ShelfScene() {
     <Canvas
       shadows
       camera={{ position: [0, 0.5, 10], fov: 45 }}
-      style={{ flex: 1, background: '#1a1410' }}
-      gl={{ antialias: true, toneMapping: 3 }} // ACESFilmic
+      style={{ flex: 1, background: '#121212' }}
+      gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
     >
       <Suspense fallback={null}>
         <Lighting />
@@ -90,7 +90,7 @@ export default function ShelfScene() {
           size={1.5}
           speed={0.3}
           opacity={0.15}
-          color="#ffe0b2"
+          color="#ffffff"
         />
 
         {/* Camera controls — limited orbit */}

@@ -56,7 +56,7 @@ export default function VinylSpinner({ size = 44, albumImage }) {
         const s = r * 0.6
         ctx.drawImage(imageRef.current, -s, -s, s * 2, s * 2)
       } else {
-        ctx.fillStyle = '#c97b2a'
+        ctx.fillStyle = '#5b8def'
         ctx.fill()
       }
 
@@ -65,7 +65,7 @@ export default function VinylSpinner({ size = 44, albumImage }) {
       // Center hole
       ctx.beginPath()
       ctx.arc(r, r, 2, 0, Math.PI * 2)
-      ctx.fillStyle = '#1a1410'
+      ctx.fillStyle = '#121212'
       ctx.fill()
 
       rafRef.current = requestAnimationFrame(draw)

@@ -29,7 +29,7 @@ function WoodPanel({ position, size }) {
   return (
     <mesh position={position} castShadow receiveShadow>
       <boxGeometry args={size} />
-      <meshStandardMaterial color="#8B6914" roughness={0.85} metalness={0.05} />
+      <meshStandardMaterial color="#5a5a5a" roughness={0.85} metalness={0.05} />
     </mesh>
   )
 }
