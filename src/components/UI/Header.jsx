@@ -1,7 +1,6 @@
 import useUiStore from '../../stores/uiStore'
 
 export default function Header() {
-  const openSearch = useUiStore((s) => s.openSearch)
   const toggleAbout = useUiStore((s) => s.toggleAbout)
 
   return (
@@ -53,28 +52,6 @@ export default function Header() {
           gap: 12,
         }}
       >
-        <button
-          onClick={openSearch}
-          style={{
-            padding: '6px 16px',
-            border: '1px solid var(--color-surface-light)',
-            borderRadius: 4,
-            fontSize: 12,
-            color: 'var(--color-cream)',
-            background: 'var(--color-surface)',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.borderColor = 'var(--color-amber)'
-            e.target.style.color = 'var(--color-amber)'
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.borderColor = 'var(--color-surface-light)'
-            e.target.style.color = 'var(--color-cream)'
-          }}
-        >
-          + Add Album
-        </button>
         <button
           onClick={toggleAbout}
           style={{

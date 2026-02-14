@@ -4,7 +4,6 @@ const useUiStore = create((set) => ({
   selectedAlbumId: null,
   isRecordPulledOut: false,
   showLinerNotes: false,
-  showSearchModal: false,
   showAbout: false,
   isAnimating: false,
 
@@ -22,9 +21,6 @@ const useUiStore = create((set) => ({
     set((s) => ({ showLinerNotes: !s.showLinerNotes })),
 
   setShowLinerNotes: (show) => set({ showLinerNotes: show }),
-
-  openSearch: () => set({ showSearchModal: true }),
-  closeSearch: () => set({ showSearchModal: false }),
 
   toggleAbout: () => set((s) => ({ showAbout: !s.showAbout })),
   setAbout: (show) => set({ showAbout: show }),

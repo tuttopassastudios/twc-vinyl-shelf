@@ -6,16 +6,10 @@ export default function RecordOverlay() {
   const deselectRecord = useUiStore((s) => s.deselectRecord)
   const toggleLinerNotes = useUiStore((s) => s.toggleLinerNotes)
   const showLinerNotes = useUiStore((s) => s.showLinerNotes)
-  const removeAlbum = useCollectionStore((s) => s.removeAlbum)
   const albums = useCollectionStore((s) => s.albums)
 
   const album = albums.find((a) => a.id === selectedAlbumId)
   if (!album) return null
-
-  const handleRemove = () => {
-    removeAlbum(album.id)
-    deselectRecord()
-  }
 
   return (
     <div
@@ -66,20 +60,6 @@ export default function RecordOverlay() {
         onMouseLeave={(e) => (e.target.style.color = 'var(--color-text-muted)')}
       >
         Back
-      </button>
-
-      <button
-        onClick={handleRemove}
-        style={{
-          padding: '8px 12px',
-          color: 'var(--color-text-muted)',
-          fontSize: 11,
-          transition: 'color 0.2s',
-        }}
-        onMouseEnter={(e) => (e.target.style.color = '#e74c3c')}
-        onMouseLeave={(e) => (e.target.style.color = 'var(--color-text-muted)')}
-      >
-        Remove
       </button>
 
       <style>{`

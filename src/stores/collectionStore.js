@@ -1,38 +1,17 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import CATALOG from '../utils/catalog'
 
-const useCollectionStore = create(
-  persist(
-    (set, get) => ({
-      albums: [],
-      albumDetails: {}, // cached full album details keyed by id
+const useCollectionStore = create((set, get) => ({
+  albums: CATALOG,
+  albumDetails: {},
 
-      addAlbum: (album) => {
-        const { albums } = get()
-        if (albums.find((a) => a.id === album.id)) return
-        set({ albums: [...albums, album] })
-      },
+  cacheAlbumDetails: (albumId, details) => {
+    set({ albumDetails: { ...get().albumDetails, [albumId]: details } })
+  },
 
-      removeAlbum: (albumId) => {
-        set({ albums: get().albums.filter((a) => a.id !== albumId) })
-      },
-
-      reorderAlbums: (newOrder) => {
-        set({ albums: newOrder })
-      },
-
-      cacheAlbumDetails: (albumId, details) => {
-        set({ albumDetails: { ...get().albumDetails, [albumId]: details } })
-      },
-
-      getAlbumDetails: (albumId) => {
-        return get().albumDetails[albumId] || null
-      },
-    }),
-    {
-      name: 'twc-vinyl-collection',
-    }
-  )
-)
+  getAlbumDetails: (albumId) => {
+    return get().albumDetails[albumId] || null
+  },
+}))
 
 export default useCollectionStore
