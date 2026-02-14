@@ -1,8 +1,14 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useTexture } from '@react-three/drei'
 import gsap from 'gsap'
 import useUiStore from '../../stores/uiStore'
 import { albumToColor } from '../../utils/colors'
+
+function SleeveFront({ url }) {
+  const texture = useTexture(url)
+  return <meshStandardMaterial map={texture} roughness={0.5} metalness={0.05} />
+}
 
 export default function RecordPullOut({ album }) {
   const groupRef = useRef()
@@ -10,6 +16,7 @@ export default function RecordPullOut({ album }) {
   const setAnimating = useUiStore((s) => s.setAnimating)
 
   const spineColor = useMemo(() => albumToColor(album.name), [album.name])
+  const hasImage = album.images?.[0]?.url
 
   // Entry animation
   useEffect(() => {
@@ -64,10 +71,14 @@ export default function RecordPullOut({ album }) {
 
   return (
     <group ref={groupRef} position={[0, 0.3, 2.5]}>
-      {/* Album sleeve — colored front face */}
+      {/* Album sleeve — front face with cover art or color */}
       <mesh castShadow>
         <boxGeometry args={[2, 2, 0.06]} />
-        <meshStandardMaterial color={spineColor} roughness={0.5} metalness={0.05} />
+        {hasImage ? (
+          <SleeveFront url={album.images[0].url} />
+        ) : (
+          <meshStandardMaterial color={spineColor} roughness={0.5} metalness={0.05} />
+        )}
       </mesh>
 
       {/* Sleeve back */}
@@ -76,17 +87,18 @@ export default function RecordPullOut({ album }) {
         <meshStandardMaterial color={spineColor} roughness={0.7} />
       </mesh>
 
-      {/* Album title text area (centered on sleeve) */}
-      {/* Using a lighter patch as a label area */}
-      <mesh position={[0, 0, 0.032]}>
-        <planeGeometry args={[1.6, 0.5]} />
-        <meshStandardMaterial
-          color="#000000"
-          transparent
-          opacity={0.3}
-          roughness={0.9}
-        />
-      </mesh>
+      {/* Album title text area (centered on sleeve) — only show if no cover art */}
+      {!hasImage && (
+        <mesh position={[0, 0, 0.032]}>
+          <planeGeometry args={[1.6, 0.5]} />
+          <meshStandardMaterial
+            color="#000000"
+            transparent
+            opacity={0.3}
+            roughness={0.9}
+          />
+        </mesh>
+      )}
 
       {/* Vinyl disc — peeks out to the right */}
       <group ref={vinylRef} position={[0.4, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>

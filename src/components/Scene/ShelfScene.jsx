@@ -62,7 +62,7 @@ export default function ShelfScene() {
   return (
     <Canvas
       shadows
-      camera={{ position: [0, 0.5, 6], fov: 45 }}
+      camera={{ position: [0, 0.5, 10], fov: 45 }}
       style={{ flex: 1, background: '#1a1410' }}
       gl={{ antialias: true, toneMapping: 3 }} // ACESFilmic
     >

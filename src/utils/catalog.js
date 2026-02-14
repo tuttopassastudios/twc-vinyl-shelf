@@ -1,5 +1,51 @@
 // TWC album catalog — single source of truth
 // To add an album, add an entry here and redeploy
-const CATALOG = []
+const CATALOG = [
+  {
+    id: 'victony-stubborn',
+    name: 'Stubborn',
+    artist: 'Victony',
+    release_date: '2024-06-21',
+    label: 'Encore Recordings',
+    images: [{ url: '/twc-vinyl-shelf/covers/stubborn.jpg' }],
+    tracks: [
+      { id: 'st-01', track_number: 1, name: 'Stubborn', duration_ms: 170000 },
+      { id: 'st-02', track_number: 2, name: 'Everything', duration_ms: 211000 },
+      { id: 'st-03', track_number: 3, name: 'Angelus (feat. Shallipopi)', duration_ms: 210000 },
+      { id: 'st-04', track_number: 4, name: 'Soup (feat. Rema)', duration_ms: 172000 },
+      { id: 'st-05', track_number: 5, name: 'My Baby', duration_ms: 149000 },
+      { id: 'st-06', track_number: 6, name: 'Jogodo', duration_ms: 179000 },
+      { id: 'st-07', track_number: 7, name: 'Tshirt', duration_ms: 179000 },
+      { id: 'st-08', track_number: 8, name: 'Shy', duration_ms: 168000 },
+      { id: 'st-09', track_number: 9, name: 'Kolo (feat. Asake)', duration_ms: 178000 },
+      { id: 'st-10', track_number: 10, name: 'Gentlewoman', duration_ms: 173000 },
+      { id: 'st-11', track_number: 11, name: 'Accident', duration_ms: 175000 },
+      { id: 'st-12', track_number: 12, name: 'Oba (feat. Davido)', duration_ms: 190000 },
+      { id: 'st-13', track_number: 13, name: 'Small Small', duration_ms: 194000 },
+      { id: 'st-14', track_number: 14, name: 'Into the Light', duration_ms: 183000 },
+    ],
+    credits: [
+      { name: 'Victony', role: 'Vocals, songwriter' },
+      { name: 'Shallipopi', role: 'Featured artist (track 3)' },
+      { name: 'Rema', role: 'Featured artist (track 4)' },
+      { name: 'Asake', role: 'Featured artist (track 9)' },
+      { name: 'Davido', role: 'Featured artist (track 12)' },
+      { name: 'P.Priime', role: 'Producer' },
+      { name: 'Tempoe', role: 'Producer' },
+      { name: 'Blaise Beatz', role: 'Producer' },
+      { name: 'Ktizo', role: 'Producer' },
+      { name: 'BigFish', role: 'Producer' },
+      { name: 'Dera', role: 'Producer' },
+      { name: 'E Kelly', role: 'Producer' },
+      { name: 'London', role: 'Producer' },
+      { name: 'Vstix', role: 'Producer' },
+      { name: 'Tyler Chase', role: 'Mixing engineer (tracks 6, 7, 8, 10)' },
+      { name: 'Milla', role: 'Mixing engineer' },
+      { name: 'STG', role: 'Mixing engineer' },
+      { name: 'Josh Gudwin', role: 'Mixing engineer' },
+      { name: 'Colin Leonard', role: 'Mastering engineer' },
+    ],
+  },
+]
 
 export default CATALOG

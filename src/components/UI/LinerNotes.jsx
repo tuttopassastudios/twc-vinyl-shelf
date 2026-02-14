@@ -24,6 +24,7 @@ export default function LinerNotes() {
   if (!showLinerNotes || !selectedAlbumId || !album) return null
 
   const tracks = album.tracks || []
+  const credits = album.credits || []
 
   return (
     <div
@@ -149,6 +150,46 @@ export default function LinerNotes() {
           <p style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
             No track listing available.
           </p>
+        )}
+
+        {/* Credits section */}
+        {credits.length > 0 && (
+          <>
+            <div
+              style={{
+                height: 1,
+                background: 'var(--color-surface-light)',
+                marginTop: 24,
+                marginBottom: 16,
+              }}
+            />
+            <h3
+              style={{
+                fontSize: 11,
+                textTransform: 'uppercase',
+                letterSpacing: '0.1em',
+                color: 'var(--color-text-muted)',
+                marginBottom: 12,
+              }}
+            >
+              Credits
+            </h3>
+            {credits.map((credit, i) => (
+              <div
+                key={i}
+                style={{
+                  padding: '4px 0',
+                  fontSize: 12,
+                  color: 'var(--color-text-muted)',
+                  lineHeight: 1.5,
+                }}
+              >
+                <span style={{ color: 'var(--color-cream)' }}>{credit.name}</span>
+                {' — '}
+                {credit.role}
+              </div>
+            ))}
+          </>
         )}
       </div>
 
