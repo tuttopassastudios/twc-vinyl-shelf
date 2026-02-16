@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-// Build-time script: fetches album data from TIDAL and updates src/utils/catalog.js
+// Build-time script: fetches album/single data from iTunes Search API
+// and updates src/utils/catalog.js
 // Usage: node scripts/fetch-tidal.js "Artist" "Album"
 
-import 'dotenv/config'
 import { writeFileSync, readFileSync, mkdirSync, existsSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -11,10 +11,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 const CATALOG_PATH = join(ROOT, 'src/utils/catalog.js')
 const COVERS_DIR = join(ROOT, 'public/covers')
-
-const TIDAL_AUTH_URL = 'https://auth.tidal.com/v1/oauth2/token'
-const TIDAL_API = 'https://openapi.tidal.com/v2'
-const COUNTRY = 'US'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -27,188 +23,160 @@ function die(msg) {
   process.exit(1)
 }
 
-/** Parse ISO 8601 duration (e.g. "PT3M10S") to milliseconds */
-function isoDurationToMs(iso) {
-  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/)
-  if (!m) return 0
-  const hours = parseInt(m[1] || '0', 10)
-  const mins = parseInt(m[2] || '0', 10)
-  const secs = parseInt(m[3] || '0', 10)
-  return (hours * 3600 + mins * 60 + secs) * 1000
-}
+// ── iTunes Search API ───────────────────────────────────────────────────────
 
-// ── TIDAL auth ───────────────────────────────────────────────────────────────
+async function searchiTunes(artist, album) {
+  // First try searching for the album/single as an entity
+  const query = encodeURIComponent(`${artist} ${album}`)
+  const url = `https://itunes.apple.com/search?term=${query}&entity=album&limit=15`
+  const res = await fetch(url)
+  if (!res.ok) die(`iTunes search failed (${res.status})`)
+  const data = await res.json()
 
-async function getAccessToken() {
-  const { TIDAL_CLIENT_ID, TIDAL_CLIENT_SECRET } = process.env
-  if (!TIDAL_CLIENT_ID || !TIDAL_CLIENT_SECRET) {
-    die('Missing TIDAL_CLIENT_ID or TIDAL_CLIENT_SECRET in .env')
+  const results = data.results || []
+  if (!results.length) {
+    // Fall back to song search
+    console.log('  No album results, trying song search…')
+    return searchiTunesSong(artist, album)
   }
 
-  const basic = Buffer.from(`${TIDAL_CLIENT_ID}:${TIDAL_CLIENT_SECRET}`).toString('base64')
-  const res = await fetch(TIDAL_AUTH_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${basic}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: 'grant_type=client_credentials',
+  console.log(`  Search returned ${results.length} result(s)`)
+
+  const normAlbum = album.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const normArtist = artist.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+  const scored = results.map((r) => {
+    const title = (r.collectionName || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const rArtist = (r.artistName || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+
+    let score = 0
+    if (title === normAlbum) score += 100
+    else if (title.includes(normAlbum)) score += 60
+    else if (normAlbum.includes(title)) score += 40
+
+    if (rArtist === normArtist) score += 80
+    else if (rArtist.includes(normArtist) || normArtist.includes(rArtist)) score += 50
+
+    return { result: r, score, title: r.collectionName, artist: r.artistName }
   })
 
-  if (!res.ok) {
-    const text = await res.text()
-    die(`Auth failed (${res.status}): ${text}`)
+  scored.sort((a, b) => b.score - a.score)
+
+  for (const s of scored.slice(0, 3)) {
+    console.log(`    candidate: "${s.title}" by ${s.artist} (score: ${s.score})`)
   }
 
-  const data = await res.json()
-  if (!data.access_token) {
-    die(`Auth response missing access_token: ${JSON.stringify(data)}`)
+  const best = scored[0]
+  if (best.score < 50) {
+    // Fall back to song search
+    console.log('  No good album match, trying song search…')
+    return searchiTunesSong(artist, album)
   }
-  return data.access_token
+
+  console.log(`  Found: "${best.title}" by ${best.artist}`)
+  return { type: 'album', data: best.result }
 }
 
-// ── TIDAL API helpers ────────────────────────────────────────────────────────
-
-function tidalHeaders(token) {
-  return {
-    Authorization: `Bearer ${token}`,
-    'Content-Type': 'application/vnd.api+json',
-  }
-}
-
-async function tidalGet(token, path) {
-  const url = `${TIDAL_API}${path}`
-  const res = await fetch(url, { headers: tidalHeaders(token) })
-  if (!res.ok) {
-    const text = await res.text()
-    die(`TIDAL API error (${res.status}) for ${path}: ${text}`)
-  }
-  return res.json()
-}
-
-// ── search for album ─────────────────────────────────────────────────────────
-
-async function searchAlbum(token, artist, album) {
+async function searchiTunesSong(artist, album) {
   const query = encodeURIComponent(`${artist} ${album}`)
-  // TIDAL v2 uses camelCase: /searchResults/{query}
-  const data = await tidalGet(
-    token,
-    `/searchResults/${query}?countryCode=${COUNTRY}&include=topHits`,
-  )
+  const url = `https://itunes.apple.com/search?term=${query}&entity=song&limit=15`
+  const res = await fetch(url)
+  if (!res.ok) die(`iTunes song search failed (${res.status})`)
+  const data = await res.json()
 
-  // topHits includes mixed types — filter for albums
-  const topHits = data.data?.relationships?.topHits?.data || []
-  const albumHits = topHits.filter((h) => h.type === 'albums')
-  const includedAlbums = (data.included || []).filter((r) => r.type === 'albums')
+  const results = data.results || []
+  if (!results.length) die(`No results found for "${artist} - ${album}"`)
 
-  if (!albumHits.length) die(`No albums found for "${artist} ${album}"`)
+  const normAlbum = album.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const normArtist = artist.toLowerCase().replace(/[^a-z0-9]/g, '')
 
-  // Try to find an exact title match (case-insensitive)
-  const match =
-    includedAlbums.find(
-      (a) => a.attributes?.title?.toLowerCase() === album.toLowerCase(),
-    ) || includedAlbums.find((a) => albumHits.some((h) => h.id === a.id)) || includedAlbums[0]
+  const scored = results.map((r) => {
+    const title = (r.trackName || '').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const rArtist = (r.artistName || '').toLowerCase().replace(/[^a-z0-9]/g, '')
 
-  if (!match) {
-    // Fallback: use first album hit ID even without included data
-    const albumId = albumHits[0].id
-    console.log(`  Found album id: ${albumId} (no included metadata)`)
-    return albumId
+    let score = 0
+    if (title === normAlbum) score += 100
+    else if (title.includes(normAlbum)) score += 60
+    else if (normAlbum.includes(title)) score += 40
+
+    if (rArtist === normArtist) score += 80
+    else if (rArtist.includes(normArtist) || normArtist.includes(rArtist)) score += 50
+
+    return { result: r, score, title: r.trackName, artist: r.artistName }
+  })
+
+  scored.sort((a, b) => b.score - a.score)
+
+  for (const s of scored.slice(0, 3)) {
+    console.log(`    candidate: "${s.title}" by ${s.artist} (score: ${s.score})`)
   }
 
-  console.log(`  Found: "${match.attributes.title}" (id: ${match.id})`)
-  return match.id
+  const best = scored[0]
+  if (best.score < 80) {
+    die(`No good match for "${artist} - ${album}". Best: "${best.title}" by ${best.artist} (score: ${best.score})`)
+  }
+
+  console.log(`  Found: "${best.title}" by ${best.artist}`)
+  return { type: 'song', data: best.result }
 }
 
-// ── fetch album details + tracks ─────────────────────────────────────────────
+// ── fetch album tracks from iTunes ──────────────────────────────────────────
 
-async function fetchAlbumData(token, albumId) {
-  // Fetch album metadata + artists
-  const albumData = await tidalGet(
-    token,
-    `/albums/${albumId}?countryCode=${COUNTRY}&include=items,artists`,
-  )
+async function fetchAlbumTracks(collectionId) {
+  const url = `https://itunes.apple.com/lookup?id=${collectionId}&entity=song`
+  const res = await fetch(url)
+  if (!res.ok) die(`iTunes lookup failed (${res.status})`)
+  const data = await res.json()
 
-  const albumResource = albumData.data
-  if (!albumResource) die('Album resource not found in response')
-
-  const attrs = albumResource.attributes
-  const albumIncluded = albumData.included || []
-
-  // Get album artist names
-  const albumArtistIds = (albumResource.relationships?.artists?.data || []).map((r) => r.id)
-  const albumArtistNames = albumArtistIds
-    .map((id) => albumIncluded.find((r) => r.type === 'artists' && r.id === id)?.attributes?.name)
-    .filter(Boolean)
-
-  // Get track listing with track numbers from album items relationship
-  const itemRefs = albumResource.relationships?.items?.data || []
-
-  // Fetch items with track artists
-  const itemsData = await tidalGet(
-    token,
-    `/albums/${albumId}/relationships/items?countryCode=${COUNTRY}&include=items.artists`,
-  )
-
-  const itemsIncluded = itemsData.included || []
-  const trackResources = itemsIncluded.filter((r) => r.type === 'tracks')
-  const artistResources = itemsIncluded.filter((r) => r.type === 'artists')
-
-  // Build a map of track number from the items data array
-  const trackNumberMap = new Map()
-  for (const ref of itemsData.data || []) {
-    trackNumberMap.set(ref.id, ref.meta?.trackNumber)
-  }
-
-  // Sort tracks by track number
-  const tracks = trackResources
-    .map((t) => {
-      const ta = t.attributes
-      const trackNum = trackNumberMap.get(t.id)
-
-      // Get artists for this track
-      const trackArtistIds = (t.relationships?.artists?.data || []).map((r) => r.id)
-      const artistNames = trackArtistIds
-        .map((id) => artistResources.find((a) => a.id === id)?.attributes?.name)
-        .filter(Boolean)
-
-      return {
-        id: `t-${trackNum}`,
-        track_number: trackNum,
-        name: ta.title,
-        duration_ms: isoDurationToMs(ta.duration),
-        artists: artistNames.join(', ') || undefined,
-      }
-    })
+  // First result is the collection, rest are tracks
+  const results = data.results || []
+  const tracks = results
+    .filter((r) => r.wrapperType === 'track')
+    .map((t) => ({
+      id: `t-${t.trackNumber}`,
+      track_number: t.trackNumber,
+      name: t.trackName,
+      duration_ms: t.trackTimeMillis || 0,
+      artists: t.artistName,
+    }))
     .sort((a, b) => a.track_number - b.track_number)
 
-  // Fetch cover art
-  const coverArtData = await tidalGet(
-    token,
-    `/albums/${albumId}/relationships/coverArt?countryCode=${COUNTRY}&include=coverArt`,
-  )
-  const artworks = (coverArtData.included || []).filter((r) => r.type === 'artworks')
-  // Pick the largest image
-  let imageUrl = null
-  if (artworks.length) {
-    const files = artworks[0].attributes?.files || []
-    const largest = files.reduce((best, f) => (f.meta?.width > (best?.meta?.width || 0) ? f : best), null)
-    imageUrl = largest?.href || files[0]?.href || null
+  return tracks
+}
+
+// ── build entry from iTunes data ────────────────────────────────────────────
+
+async function buildEntry(searchResult, artist, album) {
+  const { type, data } = searchResult
+
+  let tracks
+  if (type === 'album') {
+    tracks = await fetchAlbumTracks(data.collectionId)
+  } else {
+    // Single song result
+    tracks = [
+      {
+        id: 't-1',
+        track_number: 1,
+        name: data.trackName,
+        duration_ms: data.trackTimeMillis || 0,
+        artists: data.artistName,
+      },
+    ]
   }
 
-  // Extract label from copyright text
-  const copyrightText = attrs.copyright?.text || ''
-  const labelMatch = copyrightText.match(/(?:exclusive\s+)?(?:global\s+)?license to\s+(.+)$/i)
-    || copyrightText.match(/\)\s+(.+)$/)
-  const label = labelMatch ? labelMatch[1].trim() : copyrightText
+  const releaseDate = (type === 'album' ? data.releaseDate : data.releaseDate) || null
+  const formattedDate = releaseDate ? releaseDate.split('T')[0] : null
+
+  // Get high-res artwork URL (replace 100x100 with 600x600)
+  const artworkUrl = (data.artworkUrl100 || '').replace('100x100', '600x600')
 
   return {
-    tidalId: Number(albumId),
-    title: attrs.title,
-    artist: albumArtistNames.join(', ') || 'Unknown',
-    releaseDate: attrs.releaseDate || null,
-    label,
-    imageUrl,
+    title: type === 'album' ? data.collectionName : data.trackName,
+    artist: data.artistName,
+    releaseDate: formattedDate,
+    label: data.copyright || '',
+    artworkUrl,
     tracks,
   }
 }
@@ -217,27 +185,24 @@ async function fetchAlbumData(token, albumId) {
 
 async function downloadCover(imageUrl, slug) {
   if (!imageUrl) {
-    console.log('  ⚠ No cover image URL found, skipping download')
-    return null
+    console.log('  ⚠ No cover image URL, skipping')
+    return `/twc-vinyl-shelf/covers/${slug}.jpg`
   }
 
   mkdirSync(COVERS_DIR, { recursive: true })
-
-  // Determine extension from URL, default to jpg
-  const ext = imageUrl.match(/\.(png|webp|jpg|jpeg)(\?|$)/i)?.[1] || 'jpg'
-  const filename = `${slug}.${ext}`
+  const filename = `${slug}.jpg`
   const dest = join(COVERS_DIR, filename)
 
-  console.log(`  Downloading cover → public/covers/${filename}`)
+  console.log(`  Downloading cover…`)
   const res = await fetch(imageUrl)
   if (!res.ok) {
-    console.log(`  ⚠ Failed to download cover (${res.status}), skipping`)
-    return null
+    console.log(`  ⚠ Failed to download cover (${res.status})`)
+    return `/twc-vinyl-shelf/covers/${filename}`
   }
 
   const buffer = Buffer.from(await res.arrayBuffer())
   writeFileSync(dest, buffer)
-  console.log(`  ✓ Saved (${(buffer.length / 1024).toFixed(0)} KB)`)
+  console.log(`  ✓ Saved cover (${(buffer.length / 1024).toFixed(0)} KB)`)
   return `/twc-vinyl-shelf/covers/${filename}`
 }
 
@@ -288,7 +253,6 @@ function writeCatalog(entry) {
 
   const albumBlock = `  {
     id: '${entry.id}',
-    tidalId: ${entry.tidalId},
     name: ${JSON.stringify(entry.name)},
     artist: ${JSON.stringify(entry.artist)},
     release_date: ${JSON.stringify(entry.release_date)},
@@ -354,41 +318,33 @@ async function main() {
     die('Usage: node scripts/fetch-tidal.js "Artist" "Album"')
   }
 
-  console.log(`\nFetching "${album}" by ${artist} from TIDAL…\n`)
+  console.log(`\nFetching "${album}" by ${artist} from iTunes…\n`)
 
-  // 1. Auth
-  console.log('  Authenticating…')
-  const token = await getAccessToken()
-  console.log('  ✓ Got access token')
-
-  // 2. Search
+  // 1. Search
   console.log('  Searching…')
-  const albumId = await searchAlbum(token, artist, album)
+  const result = await searchiTunes(artist, album)
 
-  // 3. Fetch album data
-  console.log('  Fetching album data…')
-  const data = await fetchAlbumData(token, albumId)
-  console.log(
-    `  ✓ ${data.title} — ${data.tracks.length} tracks`,
-  )
+  // 2. Build entry
+  console.log('  Fetching details…')
+  const data = await buildEntry(result, artist, album)
+  console.log(`  ✓ ${data.title} — ${data.tracks.length} track(s)`)
 
-  // 4. Download cover
+  // 3. Download cover
   const slug = slugify(album)
-  const coverPath = await downloadCover(data.imageUrl, slug)
+  const coverPath = await downloadCover(data.artworkUrl, slug)
 
-  // 5. Build catalog entry
+  // 4. Build catalog entry
   const entry = {
     id: `${slugify(artist)}-${slug}`,
-    tidalId: data.tidalId,
     name: data.title,
     artist: data.artist,
     release_date: data.releaseDate,
     label: data.label,
-    images: [{ url: coverPath || `/twc-vinyl-shelf/covers/${slug}.jpg` }],
+    images: [{ url: coverPath }],
     tracks: data.tracks,
   }
 
-  // 6. Update catalog
+  // 5. Update catalog
   console.log('  Writing catalog…')
   updateCatalog(entry)
 
