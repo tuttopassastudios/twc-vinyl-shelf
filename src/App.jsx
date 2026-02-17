@@ -13,7 +13,7 @@ export default function App() {
       <Header />
 
       {/* 3D Scene — main content area */}
-      <main style={{ flex: 1, position: 'relative' }}>
+      <main style={{ position: 'absolute', inset: 0 }}>
         <ShelfScene />
       </main>
 
