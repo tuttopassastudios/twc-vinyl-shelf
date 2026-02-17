@@ -8,7 +8,7 @@ const CUBBY_W = 1.5   // inner cubby width
 const CUBBY_H = 1.5   // inner cubby height
 const CUBBY_D = 1.4   // cubby depth
 const PANEL_T = 0.08  // panel thickness
-const LEG_H = 0.2     // short legs
+const LEG_H = 0       // floating shelf — no legs
 
 // Total outer dimensions
 const TOTAL_W = COLS * CUBBY_W + (COLS + 1) * PANEL_T
@@ -25,16 +25,23 @@ export function getCubbyCenter(col, row) {
   return [startX, startY, z]
 }
 
-function WoodPanel({ position, size }) {
+function WoodPanel({ position, size, texture }) {
   return (
     <mesh position={position} castShadow receiveShadow>
       <boxGeometry args={size} />
-      <meshStandardMaterial color="#5a5a5a" roughness={0.85} metalness={0.05} />
+      <meshStandardMaterial
+        map={texture}
+        color="#1a1a1a"
+        roughness={0.7}
+        metalness={0.15}
+      />
     </mesh>
   )
 }
 
 export default function Shelf() {
+  const woodTexture = useMemo(() => createWoodTexture(), [])
+
   const panels = useMemo(() => {
     const p = []
     const offsetY = LEG_H / 2
@@ -66,29 +73,13 @@ export default function Shelf() {
       size: [TOTAL_W, TOTAL_H, 0.04],
     })
 
-    // Legs (4 corners)
-    const legW = 0.1
-    const legPositions = [
-      [-(TOTAL_W / 2) + legW, -(TOTAL_H / 2) - LEG_H / 2 + offsetY, CUBBY_D / 2 - legW],
-      [TOTAL_W / 2 - legW, -(TOTAL_H / 2) - LEG_H / 2 + offsetY, CUBBY_D / 2 - legW],
-      [-(TOTAL_W / 2) + legW, -(TOTAL_H / 2) - LEG_H / 2 + offsetY, -(CUBBY_D / 2) + legW],
-      [TOTAL_W / 2 - legW, -(TOTAL_H / 2) - LEG_H / 2 + offsetY, -(CUBBY_D / 2) + legW],
-    ]
-    legPositions.forEach((pos, i) => {
-      p.push({
-        key: `leg-${i}`,
-        position: pos,
-        size: [legW, LEG_H, legW],
-      })
-    })
-
     return p
   }, [])
 
   return (
     <group>
       {panels.map(({ key, position, size }) => (
-        <WoodPanel key={key} position={position} size={size} />
+        <WoodPanel key={key} position={position} size={size} texture={woodTexture} />
       ))}
     </group>
   )

@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Sparkles } from '@react-three/drei'
+import { OrbitControls, Sparkles, Environment } from '@react-three/drei'
 import Shelf, { getCubbyCenter, CUBBY_W } from './Shelf'
 import RecordSpine from './RecordSpine'
 import RecordPullOut from './RecordPullOut'
@@ -9,7 +9,7 @@ import useCollectionStore from '../../stores/collectionStore'
 import useUiStore from '../../stores/uiStore'
 
 const MAX_PER_CUBBY = 18 // max records that fit side-by-side
-const SPINE_T = 0.04
+const SPINE_T = 0.06
 const SPINE_GAP = 0.005
 
 export default function ShelfScene() {
@@ -63,12 +63,15 @@ export default function ShelfScene() {
     <Canvas
       shadows
       camera={{ position: [0, 0.5, 10], fov: 45 }}
-      style={{ flex: 1, background: '#121212' }}
+      style={{ flex: 1, background: '#0a0a0a' }}
       gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
     >
       <Suspense fallback={null}>
         <Lighting />
         <Shelf />
+
+        {/* Night environment for subtle reflections on glossy surfaces */}
+        <Environment preset="night" />
 
         {/* Record spines in cubbies */}
         {recordPositions.map(({ album, position }) => (
@@ -83,14 +86,14 @@ export default function ShelfScene() {
         {/* Pulled-out record */}
         {selectedAlbum && <RecordPullOut album={selectedAlbum} />}
 
-        {/* Floating dust motes */}
+        {/* Floating dust motes — reduced for subtlety */}
         <Sparkles
-          count={40}
+          count={20}
           scale={8}
-          size={1.5}
+          size={1}
           speed={0.3}
-          opacity={0.15}
-          color="#ffffff"
+          opacity={0.08}
+          color="#fff5e6"
         />
 
         {/* Camera controls — limited orbit */}

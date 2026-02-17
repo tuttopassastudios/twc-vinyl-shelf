@@ -1,25 +1,36 @@
-import { useRef, useState, useMemo } from 'react'
+import { useRef, useState, useMemo, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html } from '@react-three/drei'
+import { Html, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { albumToColor } from '../../utils/colors'
+import { extractDominantColor } from '../../utils/dominantColor'
 import useUiStore from '../../stores/uiStore'
 
-const SPINE_THICKNESS = 0.04
+const SPINE_THICKNESS = 0.06
 const SPINE_HEIGHT = 1.3
 const SPINE_DEPTH = 1.3
 
 export default function RecordSpine({ album, position, onClick }) {
   const meshRef = useRef()
   const [hovered, setHovered] = useState(false)
+  const [dominantColor, setDominantColor] = useState(null)
   const originalY = position[1]
   const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
   const isAnimating = useUiStore((s) => s.isAnimating)
   const isSelected = selectedAlbumId === album.id
 
-  const spineColor = useMemo(() => albumToColor(album.name), [album.name])
+  const fallbackColor = useMemo(() => albumToColor(album.name), [album.name])
+  const spineColor = dominantColor || fallbackColor
   const coverUrl = album.images?.[0]?.url
+
+  // Extract dominant color from cover art
+  useEffect(() => {
+    if (!coverUrl) return
+    extractDominantColor(coverUrl).then((color) => {
+      if (color) setDominantColor(color)
+    })
+  }, [coverUrl])
 
   const handlePointerEnter = (e) => {
     e.stopPropagation()
@@ -69,17 +80,37 @@ export default function RecordSpine({ album, position, onClick }) {
 
   if (isSelected) return null
 
+  // Build spine text: "ARTIST — Title"
+  const spineText = `${album.artist || ''}  —  ${album.name || ''}`
+
   return (
-    <mesh
+    <group
       ref={meshRef}
       position={[position[0], position[1], position[2]]}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
       onClick={handleClick}
-      castShadow
     >
-      <boxGeometry args={[SPINE_THICKNESS, SPINE_HEIGHT, SPINE_DEPTH]} />
-      <meshStandardMaterial color={spineColor} roughness={0.6} metalness={0.1} />
+      <mesh castShadow>
+        <boxGeometry args={[SPINE_THICKNESS, SPINE_HEIGHT, SPINE_DEPTH]} />
+        <meshStandardMaterial color={spineColor} roughness={0.6} metalness={0.1} />
+      </mesh>
+
+      {/* Artist/title text running vertically along the spine */}
+      <Text
+        position={[SPINE_THICKNESS / 2 + 0.001, 0, 0]}
+        rotation={[0, Math.PI / 2, Math.PI / 2]}
+        fontSize={0.055}
+        maxWidth={SPINE_DEPTH * 0.85}
+        color="#ffffff"
+        anchorX="center"
+        anchorY="middle"
+        outlineWidth={0.003}
+        outlineColor="#000000"
+        font={undefined}
+      >
+        {spineText}
+      </Text>
 
       {/* Hover preview — cover art floating above spine */}
       {hovered && coverUrl && (
@@ -92,7 +123,7 @@ export default function RecordSpine({ album, position, onClick }) {
           <div
             style={{
               width: 120,
-              background: 'rgba(18, 18, 18, 0.95)',
+              background: 'rgba(10, 10, 10, 0.95)',
               borderRadius: 4,
               padding: 4,
               boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
@@ -125,6 +156,8 @@ export default function RecordSpine({ album, position, onClick }) {
           </div>
         </Html>
       )}
-    </mesh>
+    </group>
   )
 }
+
+export { SPINE_THICKNESS }

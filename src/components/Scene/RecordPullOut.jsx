@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useTexture } from '@react-three/drei'
+import { useTexture, RoundedBox } from '@react-three/drei'
 import gsap from 'gsap'
 import useUiStore from '../../stores/uiStore'
 import { albumToColor } from '../../utils/colors'
@@ -62,24 +62,23 @@ export default function RecordPullOut({ album }) {
     return () => tl.kill()
   }, [setAnimating])
 
-  // Gentle idle spin on the vinyl
+  // Gentle idle spin on the vinyl — slightly reduced
   useFrame((_, delta) => {
     if (vinylRef.current) {
-      vinylRef.current.rotation.y -= delta * 0.3
+      vinylRef.current.rotation.y -= delta * 0.25
     }
   })
 
   return (
     <group ref={groupRef} position={[0, 0.3, 2.5]}>
-      {/* Album sleeve — front face with cover art or color */}
-      <mesh castShadow>
-        <boxGeometry args={[2, 2, 0.06]} />
+      {/* Album sleeve — RoundedBox for subtle corner radius */}
+      <RoundedBox args={[2, 2, 0.06]} radius={0.02} smoothness={4} castShadow>
         {hasImage ? (
           <SleeveFront url={album.images[0].url} />
         ) : (
           <meshStandardMaterial color={spineColor} roughness={0.5} metalness={0.05} />
         )}
-      </mesh>
+      </RoundedBox>
 
       {/* Sleeve back */}
       <mesh position={[0, 0, -0.04]}>
@@ -102,10 +101,15 @@ export default function RecordPullOut({ album }) {
 
       {/* Vinyl disc — peeks out to the right */}
       <group ref={vinylRef} position={[0.4, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        {/* Main disc */}
+        {/* Main disc — improved reflective material */}
         <mesh>
           <cylinderGeometry args={[0.9, 0.9, 0.02, 64]} />
-          <meshStandardMaterial color="#1a1a1a" roughness={0.3} metalness={0.4} />
+          <meshStandardMaterial
+            color="#1a1a1a"
+            roughness={0.15}
+            metalness={0.6}
+            envMapIntensity={1.0}
+          />
         </mesh>
 
         {/* Grooves — full concentric rings */}
@@ -114,8 +118,8 @@ export default function RecordPullOut({ album }) {
             <ringGeometry args={[r - 0.01, r, 64]} />
             <meshStandardMaterial
               color="#2a2a2a"
-              roughness={0.2}
-              metalness={0.5}
+              roughness={0.1}
+              metalness={0.6}
               transparent
               opacity={0.3}
             />

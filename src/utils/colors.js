@@ -1,31 +1,32 @@
 export const PALETTE = {
-  bg: '#121212',
-  bgWarm: '#1a1a1a',
-  surface: '#2a2a2a',
-  surfaceLight: '#3a3a3a',
-  wood: '#6b6b6b',
-  woodDark: '#4a4a4a',
-  woodLight: '#8a8a8a',
-  cream: '#f0f0f0',
-  creamDark: '#d0d0d0',
+  bg: '#0a0a0a',
+  bgWarm: '#141210',
+  surface: '#252320',
+  surfaceLight: '#353230',
+  wood: '#1a1a1a',
+  woodDark: '#111111',
+  woodLight: '#2a2825',
+  cream: '#f0ede8',
+  creamDark: '#d0cdc8',
   amber: '#7c9cff',
   amberGlow: '#94b0ff',
-  text: '#f0f0f0',
-  textMuted: '#888888',
+  text: '#f0ede8',
+  textMuted: '#807c78',
   accent: '#5b8def',
   vinyl: '#1a1a1a',
   vinylGroove: '#2a2a2a',
-  vinylLabel: '#c0392b',
+  vinylLabel: '#b03325',
 }
 
 // Generate a dominant color from an album name (deterministic hash)
+// Used as fallback when cover art color extraction hasn't completed
 export function albumToColor(albumName) {
   const vinylColors = [
-    '#c0392b', '#2980b9', '#27ae60', '#8e44ad',
-    '#d35400', '#16a085', '#2c3e50', '#f39c12',
-    '#e74c3c', '#3498db', '#1abc9c', '#9b59b6',
-    '#e67e22', '#34495e', '#e84393', '#00b894',
-    '#6c5ce7', '#fd79a8', '#00cec9', '#fab1a0',
+    '#a63325', '#2670a3', '#229155', '#7a3a96',
+    '#b84800', '#148a73', '#263442', '#d48a10',
+    '#c44235', '#2d84c0', '#17a088', '#8550a0',
+    '#c46e1e', '#2e3f52', '#c43880', '#00a680',
+    '#5e50c8', '#d56d90', '#00b5b0', '#d89888',
   ]
   let hash = 0
   for (let i = 0; i < albumName.length; i++) {
