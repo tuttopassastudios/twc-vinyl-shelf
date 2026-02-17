@@ -68,3 +68,39 @@ export function createPaperTexture() {
 
   return new THREE.CanvasTexture(canvas)
 }
+
+// Procedural vinyl groove texture — singleton
+let _vinylGrooveTexture = null
+export function createVinylGrooveTexture() {
+  if (_vinylGrooveTexture) return _vinylGrooveTexture
+
+  const size = 512
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+
+  // Mid-grey base
+  ctx.fillStyle = '#3a3a3a'
+  ctx.fillRect(0, 0, size, size)
+
+  const cx = size / 2
+  const cy = size / 2
+
+  // ~110 concentric rings alternating light/dark grey
+  for (let i = 0; i < 110; i++) {
+    const radius = 10 + i * 2.1
+    if (radius > size / 2) break
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+    ctx.strokeStyle = i % 2 === 0 ? '#4a4a4a' : '#2e2e2e'
+    ctx.lineWidth = 1
+    ctx.stroke()
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.wrapS = THREE.ClampToEdgeWrapping
+  texture.wrapT = THREE.ClampToEdgeWrapping
+  _vinylGrooveTexture = texture
+  return texture
+}

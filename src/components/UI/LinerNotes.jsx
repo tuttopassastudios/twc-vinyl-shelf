@@ -1,5 +1,6 @@
 import useUiStore from '../../stores/uiStore'
 import useCollectionStore from '../../stores/collectionStore'
+import useMediaQuery from '../../hooks/useMediaQuery'
 
 function formatDuration(ms) {
   const min = Math.floor(ms / 60000)
@@ -14,6 +15,7 @@ function totalDuration(tracks) {
 }
 
 export default function LinerNotes() {
+  const isMobile = useMediaQuery('(max-width: 767px)')
   const showLinerNotes = useUiStore((s) => s.showLinerNotes)
   const setShowLinerNotes = useUiStore((s) => s.setShowLinerNotes)
   const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
@@ -33,7 +35,7 @@ export default function LinerNotes() {
         top: 0,
         right: 0,
         bottom: 0,
-        width: 380,
+        width: isMobile ? '100%' : 380,
         maxWidth: '100%',
         background: 'var(--color-bg-warm)',
         borderLeft: '1px solid var(--color-surface-light)',

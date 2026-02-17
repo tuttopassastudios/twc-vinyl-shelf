@@ -7,7 +7,7 @@ const CATALOG = [
     artist: "Victony",
     release_date: "2024-06-21",
     label: "Encore Recordings",
-    images: [{ url: '/twc-vinyl-shelf/covers/stubborn.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/stubborn.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -163,7 +163,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2024-08-22",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/boogieman.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/boogieman.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -183,7 +183,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-03-07",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/f-ck-everybody-free-maxx.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/f-ck-everybody-free-maxx.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -203,7 +203,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-09-05",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/5k.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/5k.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -223,7 +223,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-02-18",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/the-biggest-g.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/the-biggest-g.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -243,7 +243,7 @@ const CATALOG = [
     artist: "Victony",
     release_date: "2025-11-21",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/v-s-freestyle.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/v-s-freestyle.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -263,7 +263,7 @@ const CATALOG = [
     artist: "Nardo Wick",
     release_date: "2022-07-22",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/burning-up-feat-the-kid-laroi.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/burning-up-feat-the-kid-laroi.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -283,7 +283,7 @@ const CATALOG = [
     artist: "Girlfriend",
     release_date: "2025-12-17",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/deep.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/deep.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -303,7 +303,7 @@ const CATALOG = [
     artist: "Victony & Don Jazzy",
     release_date: "2025-11-21",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/e-go-be.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/e-go-be.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -323,7 +323,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-04-11",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/long-live-my-brother.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/long-live-my-brother.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -343,7 +343,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-07-18",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/someone-you-love.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/someone-you-love.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -363,7 +363,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-08-22",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/i-m-koming.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/i-m-koming.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -383,7 +383,7 @@ const CATALOG = [
     artist: "BLP Kosher",
     release_date: "2024-07-12",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/hour-glass.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/hour-glass.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -403,7 +403,7 @@ const CATALOG = [
     artist: "Fivio Foreign & The Kid LAROI",
     release_date: "2022-07-08",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/paris-to-tokyo.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/paris-to-tokyo.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -423,7 +423,7 @@ const CATALOG = [
     artist: "Mike Dimes",
     release_date: "2023-04-21",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/off-the-porch-feat-bigxthaplug-maxo-kream.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/off-the-porch-feat-bigxthaplug-maxo-kream.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -443,7 +443,7 @@ const CATALOG = [
     artist: "Saul Villarreal",
     release_date: "2024-05-29",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/como-yo.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/como-yo.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -463,7 +463,7 @@ const CATALOG = [
     artist: "BLP Kosher",
     release_date: "2024-07-12",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/skidoo.jpg' }],
+    images: [{ url: '/twc-vinyl-shelf/covers/skidoo.webp' }],
     tracks: [
     {
       id: 't-1',

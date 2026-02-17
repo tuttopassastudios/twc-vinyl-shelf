@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import useUiStore from '../../stores/uiStore'
 import { albumToColor } from '../../utils/colors'
+import { createVinylGrooveTexture } from '../../utils/textures'
 
 const textureLoader = new THREE.TextureLoader()
 
@@ -14,6 +15,7 @@ export default function RecordPullOut({ album }) {
   const setAnimating = useUiStore((s) => s.setAnimating)
 
   const spineColor = useMemo(() => albumToColor(album.name), [album.name])
+  const grooveTexture = useMemo(() => createVinylGrooveTexture(), [])
   const coverUrl = album.images?.[0]?.url
   const [coverTexture, setCoverTexture] = useState(null)
 
@@ -113,9 +115,9 @@ export default function RecordPullOut({ album }) {
 
       {/* Vinyl disc — peeks out to the right */}
       <group ref={vinylRef} position={[0.4, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        {/* Main disc — improved reflective material */}
+        {/* Main disc — open-ended cylinder (caps added separately with grooves) */}
         <mesh>
-          <cylinderGeometry args={[0.9, 0.9, 0.02, 64]} />
+          <cylinderGeometry args={[0.9, 0.9, 0.02, 64, 1, true]} />
           <meshStandardMaterial
             color="#1a1a1a"
             roughness={0.15}
@@ -124,14 +126,42 @@ export default function RecordPullOut({ album }) {
           />
         </mesh>
 
+        {/* Top face with groove texture */}
+        <mesh position={[0, 0.011, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.9, 64]} />
+          <meshStandardMaterial
+            color="#1a1a1a"
+            roughness={0.15}
+            metalness={0.6}
+            bumpMap={grooveTexture}
+            bumpScale={0.015}
+            roughnessMap={grooveTexture}
+            envMapIntensity={1.0}
+          />
+        </mesh>
+
+        {/* Bottom face cap */}
+        <mesh position={[0, -0.011, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[0.9, 64]} />
+          <meshStandardMaterial
+            color="#1a1a1a"
+            roughness={0.15}
+            metalness={0.6}
+            bumpMap={grooveTexture}
+            bumpScale={0.015}
+            roughnessMap={grooveTexture}
+            envMapIntensity={1.0}
+          />
+        </mesh>
+
         {/* Center label */}
-        <mesh position={[0, 0, 0.013]}>
+        <mesh position={[0, 0.012, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[0.22, 32]} />
           <meshStandardMaterial color={spineColor} roughness={0.6} />
         </mesh>
 
         {/* Center hole */}
-        <mesh position={[0, 0, 0.014]}>
+        <mesh position={[0, 0.013, 0]} rotation={[-Math.PI / 2, 0, 0]}>
           <circleGeometry args={[0.03, 16]} />
           <meshStandardMaterial color="#1a1a1a" />
         </mesh>

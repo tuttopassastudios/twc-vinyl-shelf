@@ -1,8 +1,10 @@
-import ShelfScene from './components/Scene/ShelfScene'
 import Header from './components/UI/Header'
 import LinerNotes from './components/UI/LinerNotes'
-import AboutOverlay from './components/UI/AboutOverlay'
 import RecordOverlay from './components/UI/RecordOverlay'
+import HeroSection from './components/sections/HeroSection'
+import ProjectsSection from './components/sections/ProjectsSection'
+import AboutSection from './components/sections/AboutSection'
+import ContactSection from './components/sections/ContactSection'
 import useUiStore from './stores/uiStore'
 
 export default function App() {
@@ -12,15 +14,16 @@ export default function App() {
     <>
       <Header />
 
-      {/* 3D Scene — main content area */}
-      <main style={{ position: 'absolute', inset: 0 }}>
-        <ShelfScene />
+      <main>
+        <HeroSection />
+        <ProjectsSection />
+        <AboutSection />
+        <ContactSection />
       </main>
 
-      {/* Overlays */}
+      {/* Overlays — position:fixed, render above everything */}
       {selectedAlbumId && <RecordOverlay />}
       <LinerNotes />
-      <AboutOverlay />
     </>
   )
 }

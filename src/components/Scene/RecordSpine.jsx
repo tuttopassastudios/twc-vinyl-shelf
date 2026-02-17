@@ -11,9 +11,13 @@ const SPINE_THICKNESS = 0.06
 const SPINE_HEIGHT = 1.3
 const SPINE_DEPTH = 1.3
 
+const coverLoader = new THREE.TextureLoader()
+const coverCache = new Map()
+
 export default function RecordSpine({ album, position, onClick }) {
   const groupRef = useRef()
   const meshRef = useRef()
+  const emissiveRef = useRef(0)
   const [hovered, setHovered] = useState(false)
   const [dominantColor, setDominantColor] = useState(null)
   const originalY = position[1]
@@ -24,12 +28,27 @@ export default function RecordSpine({ album, position, onClick }) {
   const fallbackColor = useMemo(() => albumToColor(album.name), [album.name])
   const spineColor = dominantColor || fallbackColor
   const coverUrl = album.images?.[0]?.url
+  const [coverTexture, setCoverTexture] = useState(null)
 
   // Extract dominant color from cover art
   useEffect(() => {
     if (!coverUrl) return
     extractDominantColor(coverUrl).then((color) => {
       if (color) setDominantColor(color)
+    })
+  }, [coverUrl])
+
+  // Load cover texture for side faces
+  useEffect(() => {
+    if (!coverUrl) return
+    if (coverCache.has(coverUrl)) {
+      setCoverTexture(coverCache.get(coverUrl))
+      return
+    }
+    coverLoader.load(coverUrl, (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace
+      coverCache.set(coverUrl, tex)
+      setCoverTexture(tex)
     })
   }, [coverUrl])
 
@@ -67,16 +86,15 @@ export default function RecordSpine({ album, position, onClick }) {
     onClick?.(album, groupRef)
   }
 
-  // Hover glow
+  // Smooth hover glow via lerp
   useFrame(() => {
     if (!meshRef.current) return
     const mat = meshRef.current.material
-    if (hovered) {
-      mat.emissive = new THREE.Color(spineColor)
-      mat.emissiveIntensity = 0.15
-    } else {
-      mat.emissiveIntensity = 0
-    }
+    const target = hovered ? 0.2 : 0
+    emissiveRef.current += (target - emissiveRef.current) * 0.08
+    if (Math.abs(emissiveRef.current) < 0.001) emissiveRef.current = 0
+    mat.emissive.set(spineColor)
+    mat.emissiveIntensity = emissiveRef.current
   })
 
   if (isSelected) return null
@@ -92,6 +110,7 @@ export default function RecordSpine({ album, position, onClick }) {
       <mesh
         ref={meshRef}
         castShadow
+        receiveShadow
         onPointerEnter={handlePointerEnter}
         onPointerLeave={handlePointerLeave}
         onClick={handleClick}
@@ -100,21 +119,45 @@ export default function RecordSpine({ album, position, onClick }) {
         <meshStandardMaterial color={spineColor} roughness={0.6} metalness={0.1} />
       </mesh>
 
-      {/* Artist/title text running vertically along the spine */}
+      {/* Spine text on front face (+Z) — reads bottom-to-top */}
       <Text
         raycast={() => null}
-        position={[SPINE_THICKNESS / 2 + 0.001, 0, 0]}
-        rotation={[0, Math.PI / 2, Math.PI / 2]}
-        fontSize={0.055}
-        maxWidth={SPINE_DEPTH * 0.85}
-        color="#2C2824"
+        position={[0, 0, SPINE_DEPTH / 2 + 0.001]}
+        rotation={[0, 0, Math.PI / 2]}
+        fontSize={0.028}
+        maxWidth={SPINE_HEIGHT * 0.9}
+        color="#F0EDE8"
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.002}
-        outlineColor="#ffffff"
+        outlineWidth={0.003}
+        outlineColor="#1a1a1a"
       >
         {spineText}
       </Text>
+
+      {/* Cover art on +X face (right side) */}
+      {coverTexture && (
+        <mesh
+          raycast={() => null}
+          position={[SPINE_THICKNESS / 2 + 0.001, 0, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+        >
+          <planeGeometry args={[SPINE_DEPTH * 0.98, SPINE_HEIGHT * 0.98]} />
+          <meshStandardMaterial map={coverTexture} roughness={0.5} metalness={0.05} />
+        </mesh>
+      )}
+
+      {/* Cover art on -X face (left side) */}
+      {coverTexture && (
+        <mesh
+          raycast={() => null}
+          position={[-SPINE_THICKNESS / 2 - 0.001, 0, 0]}
+          rotation={[0, -Math.PI / 2, 0]}
+        >
+          <planeGeometry args={[SPINE_DEPTH * 0.98, SPINE_HEIGHT * 0.98]} />
+          <meshStandardMaterial map={coverTexture} roughness={0.5} metalness={0.05} />
+        </mesh>
+      )}
 
       {/* Hover preview — cover art floating above spine */}
       {hovered && coverUrl && (

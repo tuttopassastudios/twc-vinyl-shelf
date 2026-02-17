@@ -4,7 +4,6 @@ const useUiStore = create((set) => ({
   selectedAlbumId: null,
   isRecordPulledOut: false,
   showLinerNotes: false,
-  showAbout: false,
   isAnimating: false,
 
   selectRecord: (albumId) =>
@@ -21,9 +20,6 @@ const useUiStore = create((set) => ({
     set((s) => ({ showLinerNotes: !s.showLinerNotes })),
 
   setShowLinerNotes: (show) => set({ showLinerNotes: show }),
-
-  toggleAbout: () => set((s) => ({ showAbout: !s.showAbout })),
-  setAbout: (show) => set({ showAbout: show }),
 
   setAnimating: (animating) => set({ isAnimating: animating }),
 }))

@@ -1,5 +1,6 @@
-import { Suspense, useMemo, useCallback, useState, useEffect } from 'react'
+import { Suspense, useMemo, useCallback, useState, useEffect, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
+import * as THREE from 'three'
 import { OrbitControls, Sparkles, Environment } from '@react-three/drei'
 import Shelf, { getCubbyCenter, CUBBY_W } from './Shelf'
 import RecordSpine from './RecordSpine'
@@ -22,6 +23,17 @@ export default function ShelfScene() {
     () => albums.find((a) => a.id === selectedAlbumId),
     [albums, selectedAlbumId]
   )
+
+  const [canvasHovered, setCanvasHovered] = useState(false)
+  const canvasRef = useRef(null)
+
+  // Set touch-action on the canvas DOM element for mobile scroll passthrough
+  useEffect(() => {
+    const el = canvasRef.current
+    if (el) {
+      el.style.touchAction = 'pan-y'
+    }
+  }, [])
 
   // Extract dominant color from selected album for background glow
   const [bgColor, setBgColor] = useState(null)
@@ -79,16 +91,15 @@ export default function ShelfScene() {
 
   return (
     <Canvas
+      ref={canvasRef}
       shadows
       camera={{ position: [0, 0.5, 10], fov: 45 }}
-      style={{
-        background: bgColor
-          ? `radial-gradient(ellipse at center, ${bgColor}40 0%, ${bgColor}15 40%, #ffffff 75%)`
-          : '#ffffff',
-        transition: 'background 0.6s ease',
-      }}
-      gl={{ antialias: true, toneMapping: 0, alpha: true }} // NoToneMapping, transparent canvas
+      style={{ background: 'transparent' }}
+      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1, alpha: true }}
+      onPointerEnter={() => setCanvasHovered(true)}
+      onPointerLeave={() => setCanvasHovered(false)}
     >
+        <fog attach="fog" args={['#1a1715', 12, 22]} />
         {/* Core scene — no Suspense needed (synchronous geometry) */}
         <Lighting />
         <Shelf />
@@ -123,10 +134,10 @@ export default function ShelfScene() {
           color="#E8E4DC"
         />
 
-        {/* Camera controls — limited orbit */}
+        {/* Camera controls — limited orbit, zoom gated on hover */}
         <OrbitControls
           enablePan={false}
-          enableZoom={true}
+          enableZoom={canvasHovered}
           minPolarAngle={Math.PI / 3}
           maxPolarAngle={Math.PI / 2.2}
           minAzimuthAngle={-Math.PI / 6}
