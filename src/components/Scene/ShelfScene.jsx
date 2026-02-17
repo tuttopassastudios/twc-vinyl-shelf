@@ -1,5 +1,5 @@
 import { Suspense, useMemo, useCallback, useState, useEffect, useRef } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { OrbitControls, Sparkles, Environment } from '@react-three/drei'
 import Shelf, { getCubbyCenter, CUBBY_W } from './Shelf'
@@ -12,6 +12,33 @@ import { albumToColor } from '../../utils/colors'
 import { extractDominantColor } from '../../utils/dominantColor'
 
 const MAX_PER_CUBBY = 18 // max records that fit side-by-side
+const PAN_THRESHOLD = 7 // camera distance below which panning is enabled
+const DEFAULT_TARGET = new THREE.Vector3(0, 0.5, 0)
+const TARGET_LERP_SPEED = 0.03
+
+function CameraWatcher({ controlsRef }) {
+  useFrame(({ camera }) => {
+    const controls = controlsRef.current
+    if (!controls) return
+
+    const dist = camera.position.length()
+
+    if (dist < PAN_THRESHOLD) {
+      controls.enablePan = true
+    } else {
+      controls.enablePan = false
+      // Smoothly re-center the target when zoomed out
+      controls.target.lerp(DEFAULT_TARGET, TARGET_LERP_SPEED)
+    }
+
+    // Clamp target to shelf bounds so user can't pan into empty space
+    controls.target.x = THREE.MathUtils.clamp(controls.target.x, -2.0, 2.0)
+    controls.target.y = THREE.MathUtils.clamp(controls.target.y, -3.5, 3.5)
+  })
+
+  return null
+}
+
 const SPINE_T = 0.06
 const SPINE_GAP = 0.005
 
@@ -26,6 +53,7 @@ export default function ShelfScene() {
 
   const [canvasHovered, setCanvasHovered] = useState(false)
   const canvasRef = useRef(null)
+  const controlsRef = useRef(null)
 
   // Set touch-action on the canvas DOM element for mobile scroll passthrough
   useEffect(() => {
@@ -136,7 +164,10 @@ export default function ShelfScene() {
 
         {/* Camera controls — limited orbit, zoom gated on hover */}
         <OrbitControls
+          ref={controlsRef}
           enablePan={false}
+          panSpeed={0.8}
+          screenSpacePanning={true}
           enableZoom={canvasHovered}
           minPolarAngle={Math.PI / 3}
           maxPolarAngle={Math.PI / 2.2}
@@ -147,6 +178,7 @@ export default function ShelfScene() {
           enableDamping
           dampingFactor={0.05}
         />
+        <CameraWatcher controlsRef={controlsRef} />
     </Canvas>
   )
 }

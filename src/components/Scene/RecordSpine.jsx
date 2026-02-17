@@ -122,6 +122,7 @@ export default function RecordSpine({ album, position, onClick }) {
       {/* Spine text on front face (+Z) — reads bottom-to-top */}
       <Text
         raycast={() => null}
+        font="/fonts/Roboto-Regular.ttf"
         position={[0, 0, SPINE_DEPTH / 2 + 0.001]}
         rotation={[0, 0, Math.PI / 2]}
         fontSize={0.028}
