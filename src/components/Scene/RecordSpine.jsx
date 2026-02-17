@@ -12,6 +12,7 @@ const SPINE_HEIGHT = 1.3
 const SPINE_DEPTH = 1.3
 
 export default function RecordSpine({ album, position, onClick }) {
+  const groupRef = useRef()
   const meshRef = useRef()
   const [hovered, setHovered] = useState(false)
   const [dominantColor, setDominantColor] = useState(null)
@@ -37,8 +38,8 @@ export default function RecordSpine({ album, position, onClick }) {
     if (isAnimating || isSelected) return
     setHovered(true)
     document.body.style.cursor = 'pointer'
-    if (meshRef.current) {
-      gsap.to(meshRef.current.position, {
+    if (groupRef.current) {
+      gsap.to(groupRef.current.position, {
         y: originalY + 0.15,
         duration: 0.3,
         ease: 'power2.out',
@@ -51,8 +52,8 @@ export default function RecordSpine({ album, position, onClick }) {
     if (isSelected) return
     setHovered(false)
     document.body.style.cursor = 'auto'
-    if (meshRef.current) {
-      gsap.to(meshRef.current.position, {
+    if (groupRef.current) {
+      gsap.to(groupRef.current.position, {
         y: originalY,
         duration: 0.3,
         ease: 'power2.out',
@@ -63,7 +64,7 @@ export default function RecordSpine({ album, position, onClick }) {
   const handleClick = (e) => {
     e.stopPropagation()
     if (isAnimating) return
-    onClick?.(album, meshRef)
+    onClick?.(album, groupRef)
   }
 
   // Hover glow
@@ -85,19 +86,23 @@ export default function RecordSpine({ album, position, onClick }) {
 
   return (
     <group
-      ref={meshRef}
+      ref={groupRef}
       position={[position[0], position[1], position[2]]}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
-      onClick={handleClick}
     >
-      <mesh castShadow>
+      <mesh
+        ref={meshRef}
+        castShadow
+        onPointerEnter={handlePointerEnter}
+        onPointerLeave={handlePointerLeave}
+        onClick={handleClick}
+      >
         <boxGeometry args={[SPINE_THICKNESS, SPINE_HEIGHT, SPINE_DEPTH]} />
         <meshStandardMaterial color={spineColor} roughness={0.6} metalness={0.1} />
       </mesh>
 
       {/* Artist/title text running vertically along the spine */}
       <Text
+        raycast={() => null}
         position={[SPINE_THICKNESS / 2 + 0.001, 0, 0]}
         rotation={[0, Math.PI / 2, Math.PI / 2]}
         fontSize={0.055}
