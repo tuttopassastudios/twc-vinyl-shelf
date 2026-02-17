@@ -1,5 +1,5 @@
-import { useMemo, useRef, useEffect } from 'react'
-import { loadShelfTextures } from '../../utils/textures'
+import { useMemo } from 'react'
+import { createWoodTexture } from '../../utils/textures'
 
 // Layout constants
 const SPINE_T = 0.06
@@ -10,36 +10,21 @@ const SIDE_PADDING = 0.3
 
 export { SPINE_T, SPINE_GAP, PLANK_THICKNESS }
 
-function WoodPanel({ position, size, textures }) {
-  const meshRef = useRef()
-
-  useEffect(() => {
-    if (meshRef.current) {
-      const geo = meshRef.current.geometry
-      geo.setAttribute('uv2', geo.attributes.uv)
-    }
-  }, [])
-
+function WoodPanel({ position, size, texture }) {
   return (
-    <mesh ref={meshRef} position={position} castShadow receiveShadow>
+    <mesh position={position} castShadow receiveShadow>
       <boxGeometry args={size} />
       <meshStandardMaterial
-        map={textures['albedo']}
-        normalMap={textures['normal-ogl']}
-        roughnessMap={textures['roughness']}
-        roughness={1.0}
-        aoMap={textures['ao']}
-        displacementMap={textures['height']}
-        displacementScale={0.02}
-        metalnessMap={textures['metallic']}
-        metalness={1.0}
+        map={texture}
+        roughness={0.75}
+        metalness={0.0}
       />
     </mesh>
   )
 }
 
 export default function Shelf({ totalAlbums = 17 }) {
-  const shelfTextures = useMemo(() => loadShelfTextures(), [])
+  const woodTexture = useMemo(() => createWoodTexture(), [])
 
   const shelfWidth = useMemo(() => {
     return totalAlbums * (SPINE_T + SPINE_GAP) + SIDE_PADDING * 2
@@ -85,10 +70,10 @@ export default function Shelf({ totalAlbums = 17 }) {
   return (
     <group>
       {panels.map(({ key, position, size }) => (
-        <WoodPanel key={key} position={position} size={size} textures={shelfTextures} />
+        <WoodPanel key={key} position={position} size={size} texture={woodTexture} />
       ))}
       {bookends.map(({ key, position, size }) => (
-        <WoodPanel key={key} position={position} size={size} textures={shelfTextures} />
+        <WoodPanel key={key} position={position} size={size} texture={woodTexture} />
       ))}
     </group>
   )

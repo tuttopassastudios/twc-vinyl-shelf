@@ -21,7 +21,7 @@ function ScrollableShelf({ albums, selectedAlbum }) {
   // Calculate scroll bounds based on album count
   const totalWidth = albums.length * (SPINE_T + SPINE_GAP)
   // How much of the shelf is visible (rough estimate based on fov and distance)
-  const visibleWidth = 2 * Math.tan((40 * Math.PI) / 360) * 4 // fov=40, distance=4
+  const visibleWidth = 2 * Math.tan((50 * Math.PI) / 360) * 6 // fov=50, distance=6
   const maxScroll = Math.max(0, (totalWidth - visibleWidth) / 2 + 0.3)
 
   // Record positions: single horizontal row
@@ -122,7 +122,7 @@ export default function ShelfScene() {
     <Canvas
       ref={canvasRef}
       shadows
-      camera={{ position: [0, 0.7, 4], fov: 40 }}
+      camera={{ position: [0, 0.8, 6], fov: 50 }}
       style={{ background: 'transparent', touchAction: 'pan-y' }}
       gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1, alpha: true }}
     >

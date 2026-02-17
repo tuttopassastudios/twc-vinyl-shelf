@@ -168,12 +168,12 @@ export default function RecordSpine({ album, position }) {
         <Html
           position={[0, SPINE_HEIGHT / 2 + 0.1, 0]}
           center
-          distanceFactor={6}
+          distanceFactor={8}
           style={{ pointerEvents: 'none' }}
         >
           <div
             style={{
-              width: 120,
+              width: 150,
               background: 'rgba(247, 245, 240, 0.97)',
               borderRadius: 4,
               padding: 4,
