@@ -1,5 +1,6 @@
 // TWC album catalog — single source of truth
 // To add an album/single, run: npm run add-album "Artist" "Title"
+// Image URLs are filenames only — resolved at render time via assetPath.js
 const CATALOG = [
 {
     id: 'victony-stubborn',
@@ -7,7 +8,7 @@ const CATALOG = [
     artist: "Victony",
     release_date: "2024-06-21",
     label: "Encore Recordings",
-    images: [{ url: '/twc-vinyl-shelf/covers/stubborn.webp' }],
+    images: [{ url: 'stubborn.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -163,7 +164,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2024-08-22",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/boogieman.webp' }],
+    images: [{ url: 'boogieman.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -183,7 +184,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-03-07",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/f-ck-everybody-free-maxx.webp' }],
+    images: [{ url: 'f-ck-everybody-free-maxx.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -203,7 +204,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-09-05",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/5k.webp' }],
+    images: [{ url: '5k.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -223,7 +224,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-02-18",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/the-biggest-g.webp' }],
+    images: [{ url: 'the-biggest-g.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -243,7 +244,7 @@ const CATALOG = [
     artist: "Victony",
     release_date: "2025-11-21",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/v-s-freestyle.webp' }],
+    images: [{ url: 'v-s-freestyle.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -263,7 +264,7 @@ const CATALOG = [
     artist: "Nardo Wick",
     release_date: "2022-07-22",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/burning-up-feat-the-kid-laroi.webp' }],
+    images: [{ url: 'burning-up-feat-the-kid-laroi.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -283,7 +284,7 @@ const CATALOG = [
     artist: "Girlfriend",
     release_date: "2025-12-17",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/deep.webp' }],
+    images: [{ url: 'deep.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -303,7 +304,7 @@ const CATALOG = [
     artist: "Victony & Don Jazzy",
     release_date: "2025-11-21",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/e-go-be.webp' }],
+    images: [{ url: 'e-go-be.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -323,7 +324,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-04-11",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/long-live-my-brother.webp' }],
+    images: [{ url: 'long-live-my-brother.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -343,7 +344,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-07-18",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/someone-you-love.webp' }],
+    images: [{ url: 'someone-you-love.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -363,7 +364,7 @@ const CATALOG = [
     artist: "EBK JaayBo",
     release_date: "2025-08-22",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/i-m-koming.webp' }],
+    images: [{ url: 'i-m-koming.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -383,7 +384,7 @@ const CATALOG = [
     artist: "BLP Kosher",
     release_date: "2024-07-12",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/hour-glass.webp' }],
+    images: [{ url: 'hour-glass.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -403,7 +404,7 @@ const CATALOG = [
     artist: "Fivio Foreign & The Kid LAROI",
     release_date: "2022-07-08",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/paris-to-tokyo.webp' }],
+    images: [{ url: 'paris-to-tokyo.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -423,7 +424,7 @@ const CATALOG = [
     artist: "Mike Dimes",
     release_date: "2023-04-21",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/off-the-porch-feat-bigxthaplug-maxo-kream.webp' }],
+    images: [{ url: 'off-the-porch-feat-bigxthaplug-maxo-kream.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -443,7 +444,7 @@ const CATALOG = [
     artist: "Saul Villarreal",
     release_date: "2024-05-29",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/como-yo.webp' }],
+    images: [{ url: 'como-yo.webp' }],
     tracks: [
     {
       id: 't-1',
@@ -463,7 +464,7 @@ const CATALOG = [
     artist: "BLP Kosher",
     release_date: "2024-07-12",
     label: "",
-    images: [{ url: '/twc-vinyl-shelf/covers/skidoo.webp' }],
+    images: [{ url: 'skidoo.webp' }],
     tracks: [
     {
       id: 't-1',

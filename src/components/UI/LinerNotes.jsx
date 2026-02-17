@@ -1,6 +1,8 @@
 import useUiStore from '../../stores/uiStore'
+import useRouterStore from '../../stores/routerStore'
 import useCollectionStore from '../../stores/collectionStore'
 import useMediaQuery from '../../hooks/useMediaQuery'
+import PersonLink from './PersonLink'
 
 function formatDuration(ms) {
   const min = Math.floor(ms / 60000)
@@ -18,12 +20,12 @@ export default function LinerNotes() {
   const isMobile = useMediaQuery('(max-width: 767px)')
   const showLinerNotes = useUiStore((s) => s.showLinerNotes)
   const setShowLinerNotes = useUiStore((s) => s.setShowLinerNotes)
-  const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
+  const albumId = useRouterStore((s) => s.albumId)
   const albums = useCollectionStore((s) => s.albums)
 
-  const album = albums.find((a) => a.id === selectedAlbumId)
+  const album = albums.find((a) => a.id === albumId)
 
-  if (!showLinerNotes || !selectedAlbumId || !album) return null
+  if (!showLinerNotes || !albumId || !album) return null
 
   const tracks = album.tracks || []
   const credits = album.credits || []
@@ -61,7 +63,7 @@ export default function LinerNotes() {
           zIndex: 1,
         }}
       >
-        ← Back to shelf
+        &larr; Back to shelf
       </button>
 
       <div style={{ padding: '20px 24px 40px' }}>
@@ -186,7 +188,7 @@ export default function LinerNotes() {
                   lineHeight: 1.5,
                 }}
               >
-                <span style={{ color: 'var(--color-cream)' }}>{credit.name}</span>
+                <PersonLink name={credit.name} />
                 {' — '}
                 {credit.role}
               </div>

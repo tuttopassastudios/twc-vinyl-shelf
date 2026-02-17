@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import useMediaQuery from '../../hooks/useMediaQuery'
+import useRouterStore from '../../stores/routerStore'
 
 const navLinks = [
-  { label: 'Home', href: '#hero' },
+  { label: 'Home', href: '#/' },
   { label: 'Projects', href: '#projects' },
   { label: 'About', href: '#about' },
   { label: 'Contact', href: '#contact' },
@@ -12,6 +13,8 @@ export default function Header() {
   const isMobile = useMediaQuery('(max-width: 767px)')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const view = useRouterStore((s) => s.view)
+  const navigate = useRouterStore((s) => s.navigate)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -19,12 +22,24 @@ export default function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Close drawer on resize to desktop
   useEffect(() => {
     if (!isMobile) setDrawerOpen(false)
   }, [isMobile])
 
-  const handleNavClick = () => setDrawerOpen(false)
+  const handleNavClick = (e, href) => {
+    setDrawerOpen(false)
+    // Hash-route links (e.g. #/) go through the router
+    if (href === '#/') {
+      e.preventDefault()
+      navigate('/')
+    }
+    // Section anchor links (e.g. #projects) work only on shelf view
+    // If not on shelf view, navigate home first
+    if (href.startsWith('#') && !href.startsWith('#/') && view !== 'shelf') {
+      e.preventDefault()
+      navigate('/')
+    }
+  }
 
   return (
     <>
@@ -50,27 +65,33 @@ export default function Header() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 24,
-              fontWeight: 500,
-              color: 'var(--color-cream)',
-              letterSpacing: 2,
-            }}
+          <a
+            href="#/"
+            onClick={(e) => { e.preventDefault(); navigate('/') }}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 16 }}
           >
-            TWC
-          </h1>
-          <span
-            style={{
-              fontSize: 11,
-              color: 'var(--color-text-muted)',
-              letterSpacing: 1,
-              textTransform: 'uppercase',
-            }}
-          >
-            Vinyl Shelf
-          </span>
+            <h1
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 24,
+                fontWeight: 500,
+                color: 'var(--color-cream)',
+                letterSpacing: 2,
+              }}
+            >
+              TWC
+            </h1>
+            <span
+              style={{
+                fontSize: 11,
+                color: 'var(--color-text-muted)',
+                letterSpacing: 1,
+                textTransform: 'uppercase',
+              }}
+            >
+              Vinyl Shelf
+            </span>
+          </a>
         </div>
 
         {/* Desktop nav */}
@@ -80,6 +101,7 @@ export default function Header() {
               <a
                 key={label}
                 href={href}
+                onClick={(e) => handleNavClick(e, href)}
                 style={{
                   padding: '6px 14px',
                   fontSize: 12,
@@ -171,7 +193,7 @@ export default function Header() {
             <a
               key={label}
               href={href}
-              onClick={handleNavClick}
+              onClick={(e) => handleNavClick(e, href)}
               style={{
                 fontFamily: 'var(--font-display)',
                 fontSize: 36,

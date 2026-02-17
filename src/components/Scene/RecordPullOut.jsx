@@ -6,6 +6,7 @@ import gsap from 'gsap'
 import useUiStore from '../../stores/uiStore'
 import { albumToColor } from '../../utils/colors'
 import { createVinylGrooveTexture } from '../../utils/textures'
+import { coverPath } from '../../utils/assetPath'
 
 const textureLoader = new THREE.TextureLoader()
 
@@ -16,10 +17,11 @@ export default function RecordPullOut({ album }) {
 
   const spineColor = useMemo(() => albumToColor(album.name), [album.name])
   const grooveTexture = useMemo(() => createVinylGrooveTexture(), [])
-  const coverUrl = album.images?.[0]?.url
+  const coverFilename = album.images?.[0]?.url
+  const coverUrl = coverFilename ? coverPath(coverFilename) : null
   const [coverTexture, setCoverTexture] = useState(null)
 
-  // Load cover texture imperatively (avoids Suspense/loading spinners)
+  // Load cover texture
   useEffect(() => {
     if (!coverUrl) return
     textureLoader.load(coverUrl, (tex) => {
@@ -72,7 +74,7 @@ export default function RecordPullOut({ album }) {
     return () => tl.kill()
   }, [setAnimating])
 
-  // Gentle idle spin on the vinyl — slightly reduced
+  // Gentle idle spin on the vinyl
   useFrame((_, delta) => {
     if (vinylRef.current) {
       vinylRef.current.rotation.y -= delta * 0.25
@@ -81,7 +83,7 @@ export default function RecordPullOut({ album }) {
 
   return (
     <group ref={groupRef} position={[0, 0.3, 2.5]}>
-      {/* Album sleeve — RoundedBox for subtle corner radius */}
+      {/* Album sleeve */}
       <RoundedBox args={[2, 2, 0.06]} radius={0.02} smoothness={4} castShadow>
         <meshStandardMaterial color={spineColor} roughness={0.5} metalness={0.05} />
       </RoundedBox>
@@ -100,7 +102,7 @@ export default function RecordPullOut({ album }) {
         <meshStandardMaterial color={spineColor} roughness={0.7} />
       </mesh>
 
-      {/* Album title text area (centered on sleeve) — only show if no cover art */}
+      {/* Album title text area (only show if no cover art) */}
       {!coverUrl && (
         <mesh position={[0, 0, 0.032]}>
           <planeGeometry args={[1.6, 0.5]} />
@@ -115,7 +117,6 @@ export default function RecordPullOut({ album }) {
 
       {/* Vinyl disc — peeks out to the right */}
       <group ref={vinylRef} position={[0.4, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        {/* Main disc — open-ended cylinder (caps added separately with grooves) */}
         <mesh>
           <cylinderGeometry args={[0.9, 0.9, 0.02, 64, 1, true]} />
           <meshStandardMaterial

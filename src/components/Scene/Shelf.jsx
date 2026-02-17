@@ -4,23 +4,11 @@ import { loadShelfTextures } from '../../utils/textures'
 // Layout constants
 const SPINE_T = 0.06
 const SPINE_GAP = 0.005
-const RECORDS_PER_ROW = 9
-const SHELF_WIDTH = RECORDS_PER_ROW * (SPINE_T + SPINE_GAP) + 0.4 // padding on sides
 const PLANK_THICKNESS = 0.08
 const PLANK_DEPTH = 1.4
-const ROW_HEIGHT = 1.5 // vertical spacing between shelf planks
+const SIDE_PADDING = 0.3
 
-export { SHELF_WIDTH, RECORDS_PER_ROW, SPINE_T, SPINE_GAP, PLANK_THICKNESS, ROW_HEIGHT }
-
-// Get the Y position for records sitting on a given row's plank
-export function getRowY(rowIndex, totalRows) {
-  // Center the whole shelf vertically
-  const totalHeight = totalRows * ROW_HEIGHT
-  const topY = totalHeight / 2
-  // Each row's plank sits at topY - (rowIndex + 1) * ROW_HEIGHT, records sit on top of plank
-  const plankY = topY - (rowIndex + 1) * ROW_HEIGHT + PLANK_THICKNESS / 2
-  return plankY
-}
+export { SPINE_T, SPINE_GAP, PLANK_THICKNESS }
 
 function WoodPanel({ position, size, textures }) {
   const meshRef = useRef()
@@ -53,28 +41,53 @@ function WoodPanel({ position, size, textures }) {
 export default function Shelf({ totalAlbums = 17 }) {
   const shelfTextures = useMemo(() => loadShelfTextures(), [])
 
-  const panels = useMemo(() => {
-    const p = []
-    const numRows = Math.ceil(totalAlbums / RECORDS_PER_ROW)
-    const numPlanks = numRows + 1 // top + bottom of each row
-    const totalHeight = numRows * ROW_HEIGHT
-    const topY = totalHeight / 2
-
-    for (let i = 0; i < numPlanks; i++) {
-      const y = topY - i * ROW_HEIGHT
-      p.push({
-        key: `plank-${i}`,
-        position: [0, y, 0],
-        size: [SHELF_WIDTH, PLANK_THICKNESS, PLANK_DEPTH],
-      })
-    }
-
-    return p
+  const shelfWidth = useMemo(() => {
+    return totalAlbums * (SPINE_T + SPINE_GAP) + SIDE_PADDING * 2
   }, [totalAlbums])
+
+  // Single-row shelf: one top plank, one bottom plank
+  const panels = useMemo(() => {
+    const topY = 0.65 + 1.3 / 2 + PLANK_THICKNESS / 2
+    const bottomY = 0.65 - 1.3 / 2 - PLANK_THICKNESS / 2
+
+    return [
+      {
+        key: 'plank-top',
+        position: [0, topY, 0],
+        size: [shelfWidth, PLANK_THICKNESS, PLANK_DEPTH],
+      },
+      {
+        key: 'plank-bottom',
+        position: [0, bottomY, 0],
+        size: [shelfWidth, PLANK_THICKNESS, PLANK_DEPTH],
+      },
+    ]
+  }, [shelfWidth])
+
+  // Bookend panels (vertical sides)
+  const bookends = useMemo(() => {
+    const height = 1.3 + PLANK_THICKNESS * 2 + 0.1
+    const centerY = 0.65
+    return [
+      {
+        key: 'bookend-left',
+        position: [-shelfWidth / 2, centerY, 0],
+        size: [PLANK_THICKNESS, height, PLANK_DEPTH],
+      },
+      {
+        key: 'bookend-right',
+        position: [shelfWidth / 2, centerY, 0],
+        size: [PLANK_THICKNESS, height, PLANK_DEPTH],
+      },
+    ]
+  }, [shelfWidth])
 
   return (
     <group>
       {panels.map(({ key, position, size }) => (
+        <WoodPanel key={key} position={position} size={size} textures={shelfTextures} />
+      ))}
+      {bookends.map(({ key, position, size }) => (
         <WoodPanel key={key} position={position} size={size} textures={shelfTextures} />
       ))}
     </group>

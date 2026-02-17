@@ -1,15 +1,22 @@
 import useUiStore from '../../stores/uiStore'
+import useRouterStore from '../../stores/routerStore'
 import useCollectionStore from '../../stores/collectionStore'
 
 export default function RecordOverlay() {
-  const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
-  const deselectRecord = useUiStore((s) => s.deselectRecord)
+  const albumId = useRouterStore((s) => s.albumId)
+  const navigate = useRouterStore((s) => s.navigate)
   const toggleLinerNotes = useUiStore((s) => s.toggleLinerNotes)
   const showLinerNotes = useUiStore((s) => s.showLinerNotes)
+  const setShowLinerNotes = useUiStore((s) => s.setShowLinerNotes)
   const albums = useCollectionStore((s) => s.albums)
 
-  const album = albums.find((a) => a.id === selectedAlbumId)
+  const album = albums.find((a) => a.id === albumId)
   if (!album) return null
+
+  const handleBack = () => {
+    setShowLinerNotes(false)
+    navigate('/')
+  }
 
   return (
     <div
@@ -33,6 +40,7 @@ export default function RecordOverlay() {
           color: 'var(--color-cream)',
           borderRadius: 20,
           fontSize: 12,
+          cursor: 'pointer',
           transition: 'all 0.2s',
         }}
         onMouseEnter={(e) => {
@@ -46,7 +54,7 @@ export default function RecordOverlay() {
       </button>
 
       <button
-        onClick={deselectRecord}
+        onClick={handleBack}
         style={{
           padding: '8px 16px',
           background: 'var(--color-surface)',
@@ -54,6 +62,7 @@ export default function RecordOverlay() {
           color: 'var(--color-text-muted)',
           borderRadius: 20,
           fontSize: 12,
+          cursor: 'pointer',
           transition: 'all 0.2s',
         }}
         onMouseEnter={(e) => (e.target.style.color = 'var(--color-cream)')}

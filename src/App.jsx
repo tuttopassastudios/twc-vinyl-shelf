@@ -1,31 +1,45 @@
 import Header from './components/UI/Header'
 import LinerNotes from './components/UI/LinerNotes'
 import RecordOverlay from './components/UI/RecordOverlay'
+import PersonPage from './components/UI/PersonPage'
 import StickerPeel from './components/UI/StickerPeel'
 import HeroSection from './components/sections/HeroSection'
 import ProjectsSection from './components/sections/ProjectsSection'
 import AboutSection from './components/sections/AboutSection'
 import ContactSection from './components/sections/ContactSection'
-import useUiStore from './stores/uiStore'
+import useRouterStore from './stores/routerStore'
 import stickerImg from './assets/sticker.png'
 
 export default function App() {
-  const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
+  const view = useRouterStore((s) => s.view)
+  const albumId = useRouterStore((s) => s.albumId)
 
   return (
     <>
       <Header />
 
-      <main>
-        <HeroSection />
-        <ProjectsSection />
-        <AboutSection />
-        <ContactSection />
-      </main>
+      {view === 'person' ? (
+        <main>
+          <PersonPage />
+        </main>
+      ) : (
+        <>
+          <main>
+            <HeroSection />
+            <ProjectsSection />
+            {view === 'shelf' && (
+              <>
+                <AboutSection />
+                <ContactSection />
+              </>
+            )}
+          </main>
 
-      {/* Overlays — position:fixed, render above everything */}
-      {selectedAlbumId && <RecordOverlay />}
-      <LinerNotes />
+          {/* Overlays — position:fixed, render above everything */}
+          {albumId && <RecordOverlay />}
+          <LinerNotes />
+        </>
+      )}
 
       <div className="sticker-wrapper">
         <StickerPeel

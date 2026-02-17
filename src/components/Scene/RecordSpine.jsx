@@ -5,7 +5,9 @@ import * as THREE from 'three'
 import gsap from 'gsap'
 import { albumToColor } from '../../utils/colors'
 import { extractDominantColor } from '../../utils/dominantColor'
+import { coverPath, fontPath } from '../../utils/assetPath'
 import useUiStore from '../../stores/uiStore'
+import useRouterStore from '../../stores/routerStore'
 
 const SPINE_THICKNESS = 0.06
 const SPINE_HEIGHT = 1.3
@@ -14,20 +16,22 @@ const SPINE_DEPTH = 1.3
 const coverLoader = new THREE.TextureLoader()
 const coverCache = new Map()
 
-export default function RecordSpine({ album, position, onClick }) {
+export default function RecordSpine({ album, position }) {
   const groupRef = useRef()
   const meshRef = useRef()
   const emissiveRef = useRef(0)
   const [hovered, setHovered] = useState(false)
   const [dominantColor, setDominantColor] = useState(null)
   const originalY = position[1]
-  const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
+  const albumId = useRouterStore((s) => s.albumId)
+  const navigate = useRouterStore((s) => s.navigate)
   const isAnimating = useUiStore((s) => s.isAnimating)
-  const isSelected = selectedAlbumId === album.id
+  const isSelected = albumId === album.id
 
   const fallbackColor = useMemo(() => albumToColor(album.name), [album.name])
   const spineColor = dominantColor || fallbackColor
-  const coverUrl = album.images?.[0]?.url
+  const coverFilename = album.images?.[0]?.url
+  const coverUrl = coverFilename ? coverPath(coverFilename) : null
   const [coverTexture, setCoverTexture] = useState(null)
 
   // Extract dominant color from cover art
@@ -83,7 +87,7 @@ export default function RecordSpine({ album, position, onClick }) {
   const handleClick = (e) => {
     e.stopPropagation()
     if (isAnimating) return
-    onClick?.(album, groupRef)
+    navigate('/album/' + album.id)
   }
 
   // Smooth hover glow via lerp
@@ -99,7 +103,6 @@ export default function RecordSpine({ album, position, onClick }) {
 
   if (isSelected) return null
 
-  // Build spine text: "ARTIST — Title"
   const spineText = `${album.artist || ''}  —  ${album.name || ''}`
 
   return (
@@ -122,7 +125,7 @@ export default function RecordSpine({ album, position, onClick }) {
       {/* Spine text on front face (+Z) — reads bottom-to-top */}
       <Text
         raycast={() => null}
-        font="/fonts/Roboto-Regular.ttf"
+        font={fontPath('Roboto-Regular.ttf')}
         position={[0, 0, SPINE_DEPTH / 2 + 0.001]}
         rotation={[0, 0, Math.PI / 2]}
         fontSize={0.028}

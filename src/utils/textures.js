@@ -72,7 +72,8 @@ export function createPaperTexture() {
 // Load cavern-deposits PBR texture set for shelf material
 export function loadShelfTextures() {
   const loader = new THREE.TextureLoader()
-  const basePath = '/textures/cavern-deposits/cavern-deposits_'
+  const base = import.meta.env.BASE_URL ?? '/'
+  const basePath = `${base}textures/cavern-deposits/cavern-deposits_`
 
   const names = ['albedo', 'normal-ogl', 'roughness', 'ao', 'height', 'metallic']
   const textures = {}
