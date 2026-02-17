@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useCallback } from 'react'
+import { Suspense, useMemo, useCallback, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Sparkles, Environment } from '@react-three/drei'
 import Shelf, { getCubbyCenter, CUBBY_W } from './Shelf'
@@ -16,6 +16,7 @@ export default function ShelfScene() {
   const albums = useCollectionStore((s) => s.albums)
   const selectedAlbumId = useUiStore((s) => s.selectedAlbumId)
   const selectRecord = useUiStore((s) => s.selectRecord)
+  const [ready, setReady] = useState(false)
 
   const selectedAlbum = useMemo(
     () => albums.find((a) => a.id === selectedAlbumId),
@@ -60,31 +61,59 @@ export default function ShelfScene() {
   )
 
   return (
-    <Canvas
-      shadows
-      camera={{ position: [0, 0.5, 10], fov: 45 }}
-      style={{ flex: 1, background: '#0a0a0a' }}
-      gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
-    >
-      <Suspense fallback={null}>
+    <div style={{ flex: 1, position: 'relative' }}>
+      {!ready && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: '#0a0a0a',
+            color: '#666',
+            fontFamily: 'inherit',
+            fontSize: 14,
+            zIndex: 1,
+          }}
+        >
+          Loading shelf…
+        </div>
+      )}
+      <Canvas
+        shadows
+        camera={{ position: [0, 0.5, 10], fov: 45 }}
+        style={{ flex: 1, background: '#0a0a0a' }}
+        gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
+        onCreated={() => setReady(true)}
+      >
+        {/* Core scene — no Suspense needed (synchronous geometry) */}
         <Lighting />
         <Shelf />
 
-        {/* Night environment for subtle reflections on glossy surfaces */}
-        <Environment preset="night" />
+        {/* Record spines — wrapped in Suspense for drei Text font loading */}
+        <Suspense fallback={null}>
+          {recordPositions.map(({ album, position }) => (
+            <RecordSpine
+              key={album.id}
+              album={album}
+              position={position}
+              onClick={handleRecordClick}
+            />
+          ))}
+        </Suspense>
 
-        {/* Record spines in cubbies */}
-        {recordPositions.map(({ album, position }) => (
-          <RecordSpine
-            key={album.id}
-            album={album}
-            position={position}
-            onClick={handleRecordClick}
-          />
-        ))}
+        {/* Environment loads HDR async — isolated Suspense so it doesn't block the shelf */}
+        <Suspense fallback={null}>
+          <Environment preset="night" />
+        </Suspense>
 
-        {/* Pulled-out record */}
-        {selectedAlbum && <RecordPullOut album={selectedAlbum} />}
+        {/* Pulled-out record uses useTexture — isolated Suspense */}
+        {selectedAlbum && (
+          <Suspense fallback={null}>
+            <RecordPullOut album={selectedAlbum} />
+          </Suspense>
+        )}
 
         {/* Floating dust motes — reduced for subtlety */}
         <Sparkles
@@ -109,7 +138,7 @@ export default function ShelfScene() {
           enableDamping
           dampingFactor={0.05}
         />
-      </Suspense>
-    </Canvas>
+      </Canvas>
+    </div>
   )
 }

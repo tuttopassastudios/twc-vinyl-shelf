@@ -112,7 +112,6 @@ export default function RecordSpine({ album, position, onClick }) {
         anchorY="middle"
         outlineWidth={0.003}
         outlineColor="#000000"
-        font={undefined}
       >
         {spineText}
       </Text>
