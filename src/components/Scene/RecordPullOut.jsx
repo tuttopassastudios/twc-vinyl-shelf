@@ -1,14 +1,12 @@
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useTexture, RoundedBox } from '@react-three/drei'
+import { RoundedBox } from '@react-three/drei'
+import * as THREE from 'three'
 import gsap from 'gsap'
 import useUiStore from '../../stores/uiStore'
 import { albumToColor } from '../../utils/colors'
 
-function SleeveFront({ url }) {
-  const texture = useTexture(url)
-  return <meshStandardMaterial map={texture} roughness={0.5} metalness={0.05} />
-}
+const textureLoader = new THREE.TextureLoader()
 
 export default function RecordPullOut({ album }) {
   const groupRef = useRef()
@@ -16,7 +14,17 @@ export default function RecordPullOut({ album }) {
   const setAnimating = useUiStore((s) => s.setAnimating)
 
   const spineColor = useMemo(() => albumToColor(album.name), [album.name])
-  const hasImage = album.images?.[0]?.url
+  const coverUrl = album.images?.[0]?.url
+  const [coverTexture, setCoverTexture] = useState(null)
+
+  // Load cover texture imperatively (avoids Suspense/loading spinners)
+  useEffect(() => {
+    if (!coverUrl) return
+    textureLoader.load(coverUrl, (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace
+      setCoverTexture(tex)
+    })
+  }, [coverUrl])
 
   // Entry animation
   useEffect(() => {
@@ -77,10 +85,10 @@ export default function RecordPullOut({ album }) {
       </RoundedBox>
 
       {/* Cover art — flat plane on front face */}
-      {hasImage && (
+      {coverTexture && (
         <mesh position={[0, 0, 0.032]}>
           <planeGeometry args={[1.96, 1.96]} />
-          <SleeveFront url={album.images[0].url} />
+          <meshStandardMaterial map={coverTexture} roughness={0.5} metalness={0.05} />
         </mesh>
       )}
 
@@ -91,7 +99,7 @@ export default function RecordPullOut({ album }) {
       </mesh>
 
       {/* Album title text area (centered on sleeve) — only show if no cover art */}
-      {!hasImage && (
+      {!coverUrl && (
         <mesh position={[0, 0, 0.032]}>
           <planeGeometry args={[1.6, 0.5]} />
           <meshStandardMaterial

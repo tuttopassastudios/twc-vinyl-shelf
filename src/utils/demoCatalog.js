@@ -1,4 +1,4 @@
-// Built-in album catalog for browsing without Spotify
+// Built-in album catalog for browsing
 // Covers are placeholder gradient-based — no external API needed
 const DEMO_CATALOG = [
   {

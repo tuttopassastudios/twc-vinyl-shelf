@@ -83,7 +83,7 @@ export default function AboutOverlay() {
         </p>
 
         <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
-          Built with React, Three.js, and the Spotify API.
+          Built with React and Three.js.
         </p>
       </div>
 

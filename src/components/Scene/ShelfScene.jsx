@@ -87,7 +87,7 @@ export default function ShelfScene() {
           : '#ffffff',
         transition: 'background 0.6s ease',
       }}
-      gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
+      gl={{ antialias: true, toneMapping: 0, alpha: true }} // NoToneMapping, transparent canvas
     >
         {/* Core scene — no Suspense needed (synchronous geometry) */}
         <Lighting />
@@ -110,12 +110,8 @@ export default function ShelfScene() {
           <Environment preset="studio" />
         </Suspense>
 
-        {/* Pulled-out record uses useTexture — isolated Suspense */}
-        {selectedAlbum && (
-          <Suspense fallback={null}>
-            <RecordPullOut album={selectedAlbum} />
-          </Suspense>
-        )}
+        {/* Pulled-out record */}
+        {selectedAlbum && <RecordPullOut album={selectedAlbum} />}
 
         {/* Floating dust motes — reduced for subtlety */}
         <Sparkles

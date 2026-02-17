@@ -35,9 +35,9 @@ export default function Lighting() {
       {/* Contact shadows under shelf for grounding */}
       <ContactShadows
         position={[0, -(TOTAL_H / 2) + LEG_H / 2 - 0.01, 0]}
-        opacity={0.15}
-        scale={12}
-        blur={3.5}
+        opacity={0.12}
+        scale={8}
+        blur={4}
         far={4}
         color="#000000"
       />
