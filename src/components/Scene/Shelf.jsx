@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { createWoodTexture } from '../../utils/textures'
+import { useMemo, useRef, useEffect } from 'react'
+import { loadShelfTextures } from '../../utils/textures'
 
 // Shelf dimensions (roughly matching a 2x4 KALLAX-style cubby unit)
 const COLS = 2
@@ -25,22 +25,37 @@ export function getCubbyCenter(col, row) {
   return [startX, startY, z]
 }
 
-function WoodPanel({ position, size, texture }) {
+function WoodPanel({ position, size, textures }) {
+  const meshRef = useRef()
+
+  useEffect(() => {
+    if (meshRef.current) {
+      const geo = meshRef.current.geometry
+      // Three.js requires uv2 for aoMap
+      geo.setAttribute('uv2', geo.attributes.uv)
+    }
+  }, [])
+
   return (
-    <mesh position={position} castShadow receiveShadow>
+    <mesh ref={meshRef} position={position} castShadow receiveShadow>
       <boxGeometry args={size} />
       <meshStandardMaterial
-        map={texture}
-        color="#C4A882"
-        roughness={0.85}
-        metalness={0.02}
+        map={textures['albedo']}
+        normalMap={textures['normal-ogl']}
+        roughnessMap={textures['roughness']}
+        roughness={1.0}
+        aoMap={textures['ao']}
+        displacementMap={textures['height']}
+        displacementScale={0.02}
+        metalnessMap={textures['metallic']}
+        metalness={1.0}
       />
     </mesh>
   )
 }
 
 export default function Shelf() {
-  const woodTexture = useMemo(() => createWoodTexture(), [])
+  const shelfTextures = useMemo(() => loadShelfTextures(), [])
 
   const panels = useMemo(() => {
     const p = []
@@ -79,7 +94,7 @@ export default function Shelf() {
   return (
     <group>
       {panels.map(({ key, position, size }) => (
-        <WoodPanel key={key} position={position} size={size} texture={woodTexture} />
+        <WoodPanel key={key} position={position} size={size} textures={shelfTextures} />
       ))}
     </group>
   )

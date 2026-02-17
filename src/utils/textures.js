@@ -69,6 +69,28 @@ export function createPaperTexture() {
   return new THREE.CanvasTexture(canvas)
 }
 
+// Load cavern-deposits PBR texture set for shelf material
+export function loadShelfTextures() {
+  const loader = new THREE.TextureLoader()
+  const basePath = '/textures/cavern-deposits/cavern-deposits_'
+
+  const names = ['albedo', 'normal-ogl', 'roughness', 'ao', 'height', 'metallic']
+  const textures = {}
+
+  names.forEach((name) => {
+    const tex = loader.load(`${basePath}${name}.png`)
+    tex.wrapS = THREE.RepeatWrapping
+    tex.wrapT = THREE.RepeatWrapping
+    tex.repeat.set(1, 1)
+    textures[name] = tex
+  })
+
+  // Albedo needs sRGB color space
+  textures['albedo'].colorSpace = THREE.SRGBColorSpace
+
+  return textures
+}
+
 // Procedural vinyl groove texture — singleton
 let _vinylGrooveTexture = null
 export function createVinylGrooveTexture() {
