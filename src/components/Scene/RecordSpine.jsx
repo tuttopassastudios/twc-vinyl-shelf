@@ -107,11 +107,11 @@ export default function RecordSpine({ album, position, onClick }) {
         rotation={[0, Math.PI / 2, Math.PI / 2]}
         fontSize={0.055}
         maxWidth={SPINE_DEPTH * 0.85}
-        color="#ffffff"
+        color="#2C2824"
         anchorX="center"
         anchorY="middle"
-        outlineWidth={0.003}
-        outlineColor="#000000"
+        outlineWidth={0.002}
+        outlineColor="#ffffff"
       >
         {spineText}
       </Text>
@@ -127,10 +127,10 @@ export default function RecordSpine({ album, position, onClick }) {
           <div
             style={{
               width: 120,
-              background: 'rgba(10, 10, 10, 0.95)',
+              background: 'rgba(247, 245, 240, 0.97)',
               borderRadius: 4,
               padding: 4,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.6)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
               textAlign: 'center',
             }}
           >
@@ -149,13 +149,13 @@ export default function RecordSpine({ album, position, onClick }) {
               style={{
                 padding: '6px 4px 4px',
                 fontSize: 10,
-                color: '#f0f0f0',
+                color: '#2C2824',
                 fontFamily: 'inherit',
                 lineHeight: 1.3,
               }}
             >
               <div style={{ fontStyle: 'italic', marginBottom: 2 }}>{album.name}</div>
-              <div style={{ color: '#7c9cff', fontSize: 9 }}>{album.artist}</div>
+              <div style={{ color: '#B87D56', fontSize: 9 }}>{album.artist}</div>
             </div>
           </div>
         </Html>

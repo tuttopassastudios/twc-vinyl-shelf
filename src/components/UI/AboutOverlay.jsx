@@ -12,8 +12,8 @@ export default function AboutOverlay() {
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(0,0,0,0.7)',
-        backdropFilter: 'blur(4px)',
+        background: 'rgba(247,245,240,0.85)',
+        backdropFilter: 'blur(8px)',
         zIndex: 500,
         display: 'flex',
         alignItems: 'center',

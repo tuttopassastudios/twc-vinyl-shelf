@@ -15,7 +15,7 @@ export default function Header() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 24px',
-        background: 'linear-gradient(180deg, rgba(26,20,16,0.95) 0%, rgba(26,20,16,0) 100%)',
+        background: 'linear-gradient(180deg, rgba(247,245,240,0.95) 0%, rgba(247,245,240,0) 100%)',
         zIndex: 200,
         pointerEvents: 'none',
       }}
@@ -25,7 +25,7 @@ export default function Header() {
           style={{
             fontFamily: 'var(--font-display)',
             fontSize: 24,
-            fontWeight: 700,
+            fontWeight: 500,
             color: 'var(--color-cream)',
             letterSpacing: 2,
           }}

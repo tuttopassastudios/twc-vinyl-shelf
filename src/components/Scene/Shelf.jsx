@@ -31,9 +31,9 @@ function WoodPanel({ position, size, texture }) {
       <boxGeometry args={size} />
       <meshStandardMaterial
         map={texture}
-        color="#1a1a1a"
-        roughness={0.7}
-        metalness={0.15}
+        color="#C4A882"
+        roughness={0.85}
+        metalness={0.02}
       />
     </mesh>
   )

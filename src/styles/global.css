@@ -7,21 +7,21 @@
 }
 
 :root {
-  --color-bg: #121212;
-  --color-bg-warm: #1a1a1a;
-  --color-surface: #2a2a2a;
-  --color-surface-light: #3a3a3a;
-  --color-wood: #6b6b6b;
-  --color-wood-dark: #4a4a4a;
-  --color-cream: #f0f0f0;
-  --color-cream-dark: #d0d0d0;
-  --color-amber: #7c9cff;
-  --color-amber-glow: #94b0ff;
-  --color-text: #f0f0f0;
-  --color-text-muted: #888888;
-  --color-accent: #5b8def;
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-mono: 'Space Mono', 'Courier New', monospace;
+  --color-bg: #F7F5F0;
+  --color-bg-warm: #EFECE5;
+  --color-surface: #E8E4DC;
+  --color-surface-light: #DDD8CE;
+  --color-wood: #C4A882;
+  --color-wood-dark: #A8896A;
+  --color-cream: #F7F5F0;
+  --color-cream-dark: #D6D1C7;
+  --color-amber: #B87D56;
+  --color-amber-glow: #C99068;
+  --color-text: #2C2824;
+  --color-text-muted: #8A847C;
+  --color-accent: #7B8F6A;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
 }
 
 html, body, #root {
@@ -41,7 +41,7 @@ html, body, #root {
   flex-direction: column;
 }
 
-/* Film grain overlay */
+/* Washi paper texture overlay */
 #root::after {
   content: '';
   position: fixed;
@@ -51,15 +51,15 @@ html, body, #root {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 button {

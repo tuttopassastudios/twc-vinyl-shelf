@@ -4,14 +4,14 @@
   left: 0;
   right: 0;
   height: 80px;
-  background: linear-gradient(180deg, #1a1a1a 0%, #121212 100%);
-  border-top: 1px solid rgba(100, 100, 100, 0.3);
+  background: linear-gradient(180deg, #EFECE5 0%, #F7F5F0 100%);
+  border-top: 1px solid rgba(180, 170, 155, 0.4);
   display: flex;
   align-items: center;
   padding: 0 20px;
   gap: 16px;
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .playerHidden {
@@ -30,7 +30,7 @@
   border-radius: 4px;
   object-fit: cover;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .vinylContainer {
@@ -48,7 +48,7 @@
 .trackName {
   font-family: var(--font-mono);
   font-size: 13px;
-  color: var(--color-cream);
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,21 +76,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-cream);
+  color: var(--color-text);
   transition: all 0.2s;
   font-size: 18px;
 }
 
 .controlBtn:hover {
   color: var(--color-amber);
-  background: rgba(232, 168, 76, 0.1);
+  background: rgba(184, 125, 86, 0.1);
 }
 
 .playBtn {
   width: 42px;
   height: 42px;
   background: var(--color-amber);
-  color: var(--color-bg) !important;
+  color: #FFFFFF !important;
   border-radius: 50%;
   font-size: 20px;
 }
@@ -147,7 +147,7 @@
   transform: translateY(-50%);
   width: 10px;
   height: 10px;
-  background: var(--color-cream);
+  background: var(--color-text);
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.2s;

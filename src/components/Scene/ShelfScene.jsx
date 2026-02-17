@@ -83,7 +83,7 @@ export default function ShelfScene() {
 
         {/* Environment loads HDR async — isolated Suspense so it doesn't block the shelf */}
         <Suspense fallback={null}>
-          <Environment preset="night" />
+          <Environment preset="studio" />
         </Suspense>
 
         {/* Pulled-out record uses useTexture — isolated Suspense */}
@@ -99,8 +99,8 @@ export default function ShelfScene() {
           scale={8}
           size={1}
           speed={0.3}
-          opacity={0.08}
-          color="#fff5e6"
+          opacity={0.04}
+          color="#E8E4DC"
         />
 
         {/* Camera controls — limited orbit */}

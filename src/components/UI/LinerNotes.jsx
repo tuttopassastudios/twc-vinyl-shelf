@@ -108,7 +108,7 @@ export default function LinerNotes() {
                   width: '100%',
                   padding: '8px 0',
                   gap: 12,
-                  borderBottom: '1px solid rgba(60,60,60,0.3)',
+                  borderBottom: '1px solid rgba(180,170,155,0.3)',
                 }}
               >
                 <span

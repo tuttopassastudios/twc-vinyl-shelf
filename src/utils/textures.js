@@ -1,14 +1,14 @@
 import * as THREE from 'three'
 
-// Procedural wood texture
+// Procedural wood texture — hinoki wood
 export function createWoodTexture() {
   const canvas = document.createElement('canvas')
   canvas.width = 512
   canvas.height = 512
   const ctx = canvas.getContext('2d')
 
-  // Base color — matte black
-  ctx.fillStyle = '#1a1a1a'
+  // Base color — warm hinoki wood
+  ctx.fillStyle = '#C4A882'
   ctx.fillRect(0, 0, 512, 512)
 
   // Subtle grain lines for texture
@@ -16,7 +16,7 @@ export function createWoodTexture() {
     const y = Math.random() * 512
     const width = Math.random() * 3 + 0.5
     const alpha = Math.random() * 0.08 + 0.02
-    ctx.strokeStyle = `rgba(30, 30, 30, ${alpha})`
+    ctx.strokeStyle = `rgba(168, 137, 106, ${alpha})`
     ctx.lineWidth = width
     ctx.beginPath()
     ctx.moveTo(0, y)
@@ -26,14 +26,14 @@ export function createWoodTexture() {
     ctx.stroke()
   }
 
-  // Very subtle grain noise
+  // Very subtle knot spots
   for (let i = 0; i < 3; i++) {
     const x = Math.random() * 512
     const y = Math.random() * 512
     const r = Math.random() * 15 + 5
     const grad = ctx.createRadialGradient(x, y, 0, x, y, r)
-    grad.addColorStop(0, 'rgba(35, 35, 35, 0.2)')
-    grad.addColorStop(1, 'rgba(35, 35, 35, 0)')
+    grad.addColorStop(0, 'rgba(180, 155, 120, 0.15)')
+    grad.addColorStop(1, 'rgba(180, 155, 120, 0)')
     ctx.fillStyle = grad
     ctx.beginPath()
     ctx.arc(x, y, r, 0, Math.PI * 2)
@@ -53,7 +53,7 @@ export function createPaperTexture() {
   canvas.height = 256
   const ctx = canvas.getContext('2d')
 
-  ctx.fillStyle = '#f0f0f0'
+  ctx.fillStyle = '#F5F0E8'
   ctx.fillRect(0, 0, 256, 256)
 
   // Noise

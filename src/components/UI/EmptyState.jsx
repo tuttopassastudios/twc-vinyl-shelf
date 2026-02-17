@@ -42,7 +42,7 @@ export default function EmptyState() {
         style={{
           padding: '10px 24px',
           background: 'var(--color-amber)',
-          color: 'var(--color-bg)',
+          color: '#FFFFFF',
           borderRadius: 20,
           fontSize: 13,
           fontWeight: 700,
