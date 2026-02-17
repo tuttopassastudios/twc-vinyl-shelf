@@ -82,7 +82,7 @@ export default function ShelfScene() {
       )}
       <Canvas
         shadows
-        camera={{ position: [0, 0.5, 10], fov: 45 }}
+        camera={{ position: [0, 0, 5], fov: 50 }}
         style={{ flex: 1, background: '#0a0a0a' }}
         gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
         onCreated={() => setReady(true)}
@@ -133,8 +133,8 @@ export default function ShelfScene() {
           maxPolarAngle={Math.PI / 2.2}
           minAzimuthAngle={-Math.PI / 6}
           maxAzimuthAngle={Math.PI / 6}
-          minDistance={4}
-          maxDistance={10}
+          minDistance={3}
+          maxDistance={7}
           enableDamping
           dampingFactor={0.05}
         />
