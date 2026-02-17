@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useCallback } from 'react'
+import { Suspense, useMemo, useCallback, useState, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Sparkles, Environment } from '@react-three/drei'
 import Shelf, { getCubbyCenter, CUBBY_W } from './Shelf'
@@ -7,6 +7,8 @@ import RecordPullOut from './RecordPullOut'
 import Lighting from './Lighting'
 import useCollectionStore from '../../stores/collectionStore'
 import useUiStore from '../../stores/uiStore'
+import { albumToColor } from '../../utils/colors'
+import { extractDominantColor } from '../../utils/dominantColor'
 
 const MAX_PER_CUBBY = 18 // max records that fit side-by-side
 const SPINE_T = 0.06
@@ -20,6 +22,23 @@ export default function ShelfScene() {
     () => albums.find((a) => a.id === selectedAlbumId),
     [albums, selectedAlbumId]
   )
+
+  // Extract dominant color from selected album for background glow
+  const [bgColor, setBgColor] = useState(null)
+  useEffect(() => {
+    if (!selectedAlbum) {
+      setBgColor(null)
+      return
+    }
+    const coverUrl = selectedAlbum.images?.[0]?.url
+    if (coverUrl) {
+      extractDominantColor(coverUrl).then((color) => {
+        setBgColor(color || albumToColor(selectedAlbum.name))
+      })
+    } else {
+      setBgColor(albumToColor(selectedAlbum.name))
+    }
+  }, [selectedAlbum])
 
   // Calculate position for each record in its cubby
   const recordPositions = useMemo(() => {
@@ -62,7 +81,12 @@ export default function ShelfScene() {
     <Canvas
       shadows
       camera={{ position: [0, 0.5, 10], fov: 45 }}
-      style={{ background: '#ffffff' }}
+      style={{
+        background: bgColor
+          ? `radial-gradient(ellipse at center, ${bgColor}40 0%, ${bgColor}15 40%, #ffffff 75%)`
+          : '#ffffff',
+        transition: 'background 0.6s ease',
+      }}
       gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
     >
         {/* Core scene — no Suspense needed (synchronous geometry) */}
