@@ -73,12 +73,16 @@ export default function RecordPullOut({ album }) {
     <group ref={groupRef} position={[0, 0.3, 2.5]}>
       {/* Album sleeve — RoundedBox for subtle corner radius */}
       <RoundedBox args={[2, 2, 0.06]} radius={0.02} smoothness={4} castShadow>
-        {hasImage ? (
-          <SleeveFront url={album.images[0].url} />
-        ) : (
-          <meshStandardMaterial color={spineColor} roughness={0.5} metalness={0.05} />
-        )}
+        <meshStandardMaterial color={spineColor} roughness={0.5} metalness={0.05} />
       </RoundedBox>
+
+      {/* Cover art — flat plane on front face */}
+      {hasImage && (
+        <mesh position={[0, 0, 0.032]}>
+          <planeGeometry args={[1.96, 1.96]} />
+          <SleeveFront url={album.images[0].url} />
+        </mesh>
+      )}
 
       {/* Sleeve back */}
       <mesh position={[0, 0, -0.04]}>

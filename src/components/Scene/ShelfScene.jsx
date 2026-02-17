@@ -62,7 +62,7 @@ export default function ShelfScene() {
     <Canvas
       shadows
       camera={{ position: [0, 0.5, 10], fov: 45 }}
-      style={{ background: '#0a0a0a' }}
+      style={{ background: '#ffffff' }}
       gl={{ antialias: true, toneMapping: 0 }} // NoToneMapping
     >
         {/* Core scene — no Suspense needed (synchronous geometry) */}
