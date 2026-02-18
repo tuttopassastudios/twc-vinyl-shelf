@@ -3,6 +3,7 @@ import LinerNotes from './components/UI/LinerNotes'
 import RecordOverlay from './components/UI/RecordOverlay'
 import PersonPage from './components/UI/PersonPage'
 import StickerPeel from './components/UI/StickerPeel'
+import CameraControls from './components/UI/CameraControls'
 import HeroSection from './components/sections/HeroSection'
 import ProjectsSection from './components/sections/ProjectsSection'
 import AboutSection from './components/sections/AboutSection'
@@ -41,6 +42,7 @@ export default function App() {
         </>
       )}
 
+      <CameraControls />
       <div className="sticker-wrapper">
         <StickerPeel
           imageSrc={stickerImg}

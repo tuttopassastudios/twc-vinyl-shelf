@@ -8,6 +8,7 @@ import RecordPullOut from './RecordPullOut'
 import Lighting from './Lighting'
 import useCollectionStore from '../../stores/collectionStore'
 import useRouterStore from '../../stores/routerStore'
+import useCameraStore from '../../stores/cameraStore'
 
 // Horizontal drag-to-scroll wrapper around shelf + records
 function ScrollableShelf({ albums, selectedAlbum }) {
@@ -20,8 +21,8 @@ function ScrollableShelf({ albums, selectedAlbum }) {
 
   // Calculate scroll bounds based on album count
   const totalWidth = albums.length * (SPINE_T + SPINE_GAP)
-  // How much of the shelf is visible (rough estimate based on fov and distance)
-  const visibleWidth = 2 * Math.tan((50 * Math.PI) / 360) * 6 // fov=50, distance=6
+  // How much of the shelf is visible (derived from current camera fov + distance)
+  const visibleWidth = 2 * Math.tan((camera.fov * Math.PI) / 360) * camera.position.z
   const maxScroll = Math.max(0, (totalWidth - visibleWidth) / 2 + 0.3)
 
   // Record positions: single horizontal row
@@ -108,6 +109,20 @@ function ScrollableShelf({ albums, selectedAlbum }) {
   )
 }
 
+function CameraSync() {
+  const fov = useCameraStore((s) => s.fov)
+  const distance = useCameraStore((s) => s.distance)
+  const height = useCameraStore((s) => s.height)
+
+  useFrame(({ camera }) => {
+    camera.position.set(0, height, distance)
+    camera.fov = fov
+    camera.updateProjectionMatrix()
+  })
+
+  return null
+}
+
 export default function ShelfScene() {
   const albums = useCollectionStore((s) => s.albums)
   const albumId = useRouterStore((s) => s.albumId)
@@ -117,15 +132,19 @@ export default function ShelfScene() {
   )
 
   const canvasRef = useRef(null)
+  const fov = useCameraStore((s) => s.fov)
+  const distance = useCameraStore((s) => s.distance)
+  const height = useCameraStore((s) => s.height)
 
   return (
     <Canvas
       ref={canvasRef}
       shadows
-      camera={{ position: [0, 0.8, 6], fov: 50 }}
+      camera={{ position: [0, height, distance], fov }}
       style={{ background: 'transparent', touchAction: 'pan-y' }}
       gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.1, alpha: true }}
     >
+      <CameraSync />
       <Lighting />
 
       <ScrollableShelf albums={albums} selectedAlbum={selectedAlbum} />
